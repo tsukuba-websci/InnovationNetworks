@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
-import Comparison from './components/Comparison.js'
+import EmpiricalComparison1 from './components/EmpiricalComparison.js'
+import SimulationComparison from './components/SimulationComparison.js';
 
 function App() {
   return (
@@ -8,7 +9,8 @@ function App() {
       <Router>
         <main style={{flexGrow: 1, maxWidth:"100%", maxHeight: "100%", overflow: "hidden"}}>
           <Routes>
-            <Route path='/' element={<Comparison />} />
+            <Route path='/empirical' element={<EmpiricalComparison1 />} />
+            <Route path='/simulation' element={<SimulationComparison />} />
           </Routes>
         </main>
       </Router>

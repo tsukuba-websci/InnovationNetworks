@@ -161,8 +161,11 @@ if __name__ == '__main__':
     graph_to_json(graph, "data/output/graph/graph_empirical_full.json")
     df_to_csv(user_network_data, "data/output/history/history_empirical_full.csv")
 
-    plot_degree_distributions_with_innovators(graph, "plot/degre_distribution_empirical.png")
-    plot_clustering_coefficients_with_innovators(graph, "plot/clustering_coefficient_distribution_empirical.png")
+    plot_degree_distributions(graph, "plot/degre_distribution_empirical.png")
+    plot_clustering_coefficients(graph, "plot/clustering_coefficient_distribution_empirical.png")
+
+    plot_degree_distributions_with_innovators(graph, "plot/degre_distribution_with_innovators_empirical.png")
+    plot_clustering_coefficients_with_innovators(graph, "plot/clustering_coefficient_distribution_with_innovators_empirical.png")
 
     largest_subgraph = most_connected_subgraph(graph)
     largest_subgraph_users = connected_users(user_network_data, graph)
