@@ -38,7 +38,7 @@ def run_model(params: Params) -> Tuple[List[Tuple[int, int]], float]:
     return env.history
 
 if __name__ == '__main__':
-    steps = 1000000
+    steps = 20000
     params = Params(1,3, 0, 0, 0, steps)
     history = run_model(params)
     history_to_csv(history, "data/output/history/history_simulation.csv")

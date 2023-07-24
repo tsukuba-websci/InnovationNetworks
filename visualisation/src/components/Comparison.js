@@ -8,10 +8,7 @@ import graph_data_simulation from '../data/graph_simulation.json';
 
 function Graph({data}) {
   const fgRef = useRef();
-
   const [width, height] = useWindowSize();
-
-
   return (
     <div>
       <ForceGraph2D
@@ -33,7 +30,7 @@ function Graph({data}) {
   );
 }
 
-function DualGraph() {
+function Comparison() {
   return (
     <Grid container spacing={0.2} style={{overflow: "hidden", background:"black"}}>
       <Grid item xs={12} sm={6}>
@@ -50,4 +47,4 @@ function DualGraph() {
   );
 }
 
-export default DualGraph
+export default Comparison
