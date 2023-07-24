@@ -1,0 +1,11 @@
+web-app/build
+web-app/node_modules
+web-app/.DS_Store
+.DS_Store
+node_modules
+web-app/src/components/graph.json
+*.csv
+*.json
+*.png
+utils/__pycache__
+visualisation/build
