@@ -110,5 +110,11 @@ def history_to_csv(history, location):
             csv_writer.writerow(item)
     pass
 
+def read_graph_from_json(json_location):
+    with open(json_location, 'r') as f:
+        data = json.load(f)
+    G = nx.node_link_graph(data)
+    return G
+
 def df_to_csv(df, location):
     df[['caller', 'callee']].to_csv(location, index=False)

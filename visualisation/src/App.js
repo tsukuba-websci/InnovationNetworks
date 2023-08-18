@@ -1,7 +1,9 @@
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
-import EmpiricalComparison1 from './components/EmpiricalComparison.js'
+import EmpiricalComparison1 from './components/EmpiricalComparison.js';
+import InnovationComparison from './components/InnovationComparison.js';
 import SimulationComparison from './components/SimulationComparison.js';
+import Timeline from './components/Timeline.js';
 
 function App() {
   return (
@@ -11,6 +13,8 @@ function App() {
           <Routes>
             <Route path='/empirical' element={<EmpiricalComparison1 />} />
             <Route path='/simulation' element={<SimulationComparison />} />
+            <Route path='/timeline' element={<Timeline />} />
+            <Route path='/innovation' element={<InnovationComparison />} />
           </Routes>
         </main>
       </Router>

@@ -50,9 +50,87 @@ def setup_julia():
     print("Finish setup Julia.")
     return Main
 
+def separate_graphs(G):
+    # Create empty directed subgraphs
+    G_no_good_idea = nx.DiGraph()
+    G_has_good_idea = nx.DiGraph()
+
+    # Populate subgraphs
+    for node, attrs in G.nodes(data=True):
+        if attrs['GoodIdea'] == 0:
+            G_no_good_idea.add_node(node, **attrs)
+        elif attrs['GoodIdea'] > 0:
+            G_has_good_idea.add_node(node, **attrs)
+
+    # Add edges relevant to the nodes present in each subgraph
+    for u, v, edge_attrs in G.edges(data=True):
+        if u in G_no_good_idea and v in G_no_good_idea:
+            G_no_good_idea.add_edge(u, v, **edge_attrs)
+        if u in G_has_good_idea and v in G_has_good_idea:
+            G_has_good_idea.add_edge(u, v, **edge_attrs)
+
+    return G_no_good_idea, G_has_good_idea
+
+def df_to_metrics(df, metrics_location, interval_num):
+    user_mapping = defaultdict(lambda: len(user_mapping))
+    history = [(user_mapping[caller], user_mapping[callee]) for caller, callee in df[['caller', 'callee']].values]
+
+    if any(map(lambda row: row[0] == 0 or row[1] == 0, history)):
+        history = list(map(lambda row: (row[0] + 1, row[1] + 1), history))
+
+    nt = Main.history2vec(history, interval_num)
+
+    result = History2VecResult(
+        c=nt.c,
+        g=nt.g,
+        gamma=nt.gamma,
+        h=nt.h,
+        nc=nt.nc,
+        no=nt.no,
+        oc=nt.oc,
+        oo=nt.oo,
+        r=nt.r,
+        y=nt.y,
+    )
+
+    results = pd.DataFrame([result._asdict()])
+    results.to_csv(metrics_location, index=False)
+    
+def df_to_metrics_incremental(df, metrics_location, interval_num):
+    user_mapping = defaultdict(lambda: len(user_mapping))
+    results = []
+
+    for i in range(100, len(df) + 1):
+        subset_df = df.head(i)
+        history = [(user_mapping[caller], user_mapping[callee]) for caller, callee in subset_df[['caller', 'callee']].values]
+
+        if any(map(lambda row: row[0] == 0 or row[1] == 0, history)):
+            history = list(map(lambda row: (row[0] + 1, row[1] + 1), history))
+
+        nt = Main.history2vec(history, interval_num)
+
+        result = History2VecResult(
+            c=nt.c,
+            g=nt.g,
+            gamma=nt.gamma,
+            h=nt.h,
+            nc=nt.nc,
+            no=nt.no,
+            oc=nt.oc,
+            oo=nt.oo,
+            r=nt.r,
+            y=nt.y,
+        )
+
+        results.append(result)
+
+    result_dicts = [result._asdict() for result in results]
+    results_df = pd.DataFrame(result_dicts)
+    results_df.to_csv(metrics_location, index=False)
+
 def setup():
     # Load data
-    user_network_data = pd.read_csv('data/input/UserNetworkData.csv', parse_dates=['Date'])[['F','T','Date']]
+    user_network_data = pd.read_csv('data/input/UserNetworkData.csv', parse_dates=['Date'])[['F','T','Date']].head(20000)
     user_network_data = user_network_data.rename(columns={
     'F': 'caller',
     'T': 'callee'
@@ -116,13 +194,8 @@ def connected_users(user_network_data, G):
 
 def csv_to_metrics(csv_location, metrics_location, interval_num: int) -> None:
 
-    # Read CSV file
     df = pd.read_csv(csv_location)
-
-    # Create a mapping of unique users to unique integers
     user_mapping = defaultdict(lambda: len(user_mapping))
-
-    # Convert DataFrame to list of tuples
     history = [(user_mapping[caller], user_mapping[callee]) for caller, callee in df.values]
 
     if any(map(lambda row: row[0] == 0 or row[1] == 0, history)):
@@ -143,10 +216,7 @@ def csv_to_metrics(csv_location, metrics_location, interval_num: int) -> None:
         y=nt.y,
     )
 
-    # Convert the result to a DataFrame
     df = pd.DataFrame([result._asdict()])
-
-    # Save the DataFrame to a csv
     df.to_csv(metrics_location, index=False)
     pass
 
@@ -175,4 +245,11 @@ if __name__ == '__main__':
 
     csv_to_metrics("data/output/history/history_empirical.csv",'data/output/metrics/ideastorm.csv', 1000)
 
-    
+    innovation_graph, no_innovation_graph = separate_graphs(graph)
+    graph_to_json(innovation_graph, "data/output/graph/innovation_graph.json")
+    graph_to_json(no_innovation_graph, "data/output/graph/no_innovation_graph.json")
+
+    plot_degree_distributions(innovation_graph, "plot/innovation_graph.png")
+    plot_degree_distributions(no_innovation_graph, "plot/no_innovation_graph.png")
+
+    df_to_metrics_incremental(user_network_data[['caller', 'callee']], 'data/output/metrics/test.csv',50)

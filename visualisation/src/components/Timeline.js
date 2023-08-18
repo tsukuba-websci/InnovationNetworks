@@ -1,21 +1,25 @@
 import * as React from 'react';
 import { useRef } from 'react';
 import { ForceGraph2D } from 'react-force-graph';
+import graph_data_1 from '../data/graph_simulation_1.json';
 
-function Graph({data, width, height}) {
+function Timeline({data, width, height}) {
+
+    console.log(graph_data_1)
+
     const fgRef = useRef();
     return (
       <div>
         <ForceGraph2D
           ref={fgRef}
           cooldownTicks={100}
-          graphData={data}
+          graphData={graph_data_1}
           onEngineStop={() => fgRef.current.zoomToFit(400,10)}
-          width={width/2.01}
+          width={width}
           height={height}
           nodeLabel="id"
           nodeAutoColorBy="group"
-          linkColor={() => 'rgba(255, 255, 255, 0.2)'}
+          linkColor={() => 'rgba(255, 255, 255, 0.04)'}
           nodeVal={node => node.GoodIdea > 0 ? 2 : 2}
           nodeColor={node => node.GoodIdea > 0 ? 'white' : '#474747'}
           onNodeClick={node => {
@@ -27,4 +31,4 @@ function Graph({data, width, height}) {
     );
   }
 
-  export default Graph
+  export default Timeline
