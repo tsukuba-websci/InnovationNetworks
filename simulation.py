@@ -40,7 +40,7 @@ def run_model(params: Params) -> Tuple[List[Tuple[int, int]], float]:
         num_nodes = len(set([item for tup in env.history for item in tup]))
         if num_nodes == 10:
             break
-    return env.history
+    return convert_tuples(env.history)
 
 def run_and_save_model(params, runs=8):
     for i in range(1, runs + 1):

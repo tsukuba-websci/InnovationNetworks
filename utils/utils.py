@@ -118,3 +118,16 @@ def read_graph_from_json(json_location):
 
 def df_to_csv(df, location):
     df[['caller', 'callee']].to_csv(location, index=False)
+
+def convert_tuples(tuples_list):
+    # Flatten the list of tuples
+    flat_list = [item for sublist in tuples_list for item in sublist]
+    
+    # Create a dictionary to map unique numbers to new numbers
+    unique_numbers = sorted(set(flat_list))
+    number_map = {num: i+1 for i, num in enumerate(unique_numbers)}
+
+    # Convert the tuples using the map
+    converted_tuples = [(number_map[num1], number_map[num2]) for num1, num2 in tuples_list]
+    
+    return converted_tuples
