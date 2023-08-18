@@ -37,6 +37,9 @@ def run_model(params: Params) -> Tuple[List[Tuple[int, int]], float]:
         callee = env.get_callee(caller)
         env.interact(caller, callee)
         caller = callee
+        num_nodes = len(set([item for tup in env.history for item in tup]))
+        if num_nodes == 10:
+            break
     return env.history
 
 def run_and_save_model(params, runs=8):
@@ -125,14 +128,14 @@ if __name__ == '__main__':
     setup_threads()
     Main = setup_julia()
 
-    steps = 20000
-    params = Params(18,5, 0, 0, 0, steps)
-    history = run_model(params)
-    history_to_csv(history, "data/output/history/history_simulation.csv")
-    graph = history_to_graph("data/output/history/history_simulation.csv")
-    graph_to_json(graph, "data/output/graph/graph_simulation.json")
+    # steps = 20000
+    # params = Params(18,5, 0, 0, 0, steps)
+    # history = run_model(params)
+    # history_to_csv(history, "data/output/history/history_simulation.csv")
+    # graph = history_to_graph("data/output/history/history_simulation.csv")
+    # graph_to_json(graph, "data/output/graph/graph_simulation.json")
 
-    csv_to_metrics("data/output/history/history_simulation.csv",'data/output/metrics/simulation.csv', 1000)
+    # csv_to_metrics("data/output/history/history_simulation.csv",'data/output/metrics/simulation.csv', 1000)
 
 
     # plot_degree_distributions(graph, "plot/degre_distribution_simulation.png")
@@ -140,6 +143,6 @@ if __name__ == '__main__':
 
     # Run the model multiple times for a given param
 
-    # steps = 10000
-    # params = Params(10,6, 0, 0, 0, steps)
-    # run_and_save_model(params, 8)
+    steps = 50000
+    params = Params(18,5, 0, 0, 0, steps)
+    run_and_save_model(params, 8)
