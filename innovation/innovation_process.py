@@ -66,12 +66,3 @@ def run_innovation_process(G, l, k, dv, steps):
         NCTF = len([item for sublist in history for item in sublist])
         TTF = len(history)
         return NCTF, TTF, failed
-    
-
-
-
-
-G = history_to_graph("../data/output/history/history_simulation_1.csv")
-
-
-print(run_innovation_process(G=G, l=2,k=1,dv=0.5,steps=1))
