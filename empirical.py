@@ -5,7 +5,7 @@ from typing import Any, NamedTuple
 import os
 from dataclasses import dataclass
 from collections import defaultdict
-from utils.utils import *
+from lib.utils import *
 
 @dataclass
 class Params:
@@ -227,7 +227,7 @@ if __name__ == '__main__':
     Main = setup_julia()
 
     user_network_data, idea_submission_data, graph = setup()
-
+    
     graph_to_json(graph, "data/output/graph/graph_empirical_full.json")
     df_to_csv(user_network_data, "data/output/history/history_empirical_full.csv")
 

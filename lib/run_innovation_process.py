@@ -24,6 +24,7 @@ def run_innovation_process(G, l, k, dv, steps):
 
     # Run Innovation Simulation
     try:
+        print("running")
         for step in range(steps):
             selected_nodes = set()
             step_history = []
