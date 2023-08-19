@@ -13,3 +13,4 @@ lib/__pycache__
 */__pycache__
 qd/models
 qd/history2bd/__pycache__
+*.pkl

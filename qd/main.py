@@ -17,8 +17,8 @@ if __name__ == "__main__":
     dim: int = args.dim
     cells: int = args.cells
 
-    k = 2
-    l = 2
+    k = 1
+    l = 20
     dv = 1
 
     # load models about the axes of QD
@@ -27,18 +27,16 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 2
+    num_generations = 20
 
     # Set Up Julia
     jl_main, thread_num = JuliaInitializer().initialize()
-
-    print(f"thread_number: {thread_num}")
 
     # run QD
     qds = QualityDiversitySearch(
         history2bd=history2bd,
         iteration_num=num_generations,
-        thread_num=thread_num,
+        thread_num=2,
         jl_main=jl_main,
         dim=dim,
         result_dir_path=f"results/NCTF/",
@@ -47,5 +45,4 @@ if __name__ == "__main__":
         l=l,
         dv=dv
     )
-    print("Starting QD")
     qds.run()

@@ -13,7 +13,6 @@ class Params:
 
 
 def run_model(params: Params) -> List[Tuple[int, int]]:
-    print("running the model")
     """ベクトル化壺モデルを実行する．
 
     Args:
@@ -26,10 +25,8 @@ def run_model(params: Params) -> List[Tuple[int, int]]:
     nu = int(params.nu)
     gene = Gene(rho, nu, params.recentness, params.frequency)
     env = Environment(gene)
-    print(params.steps)
     for _ in range(params.steps):
         caller = env.get_caller()
         callee = env.get_callee(caller)
-        print(f"caller callee: {caller} {callee}")
         env.interact(caller, callee)
     return env.history
