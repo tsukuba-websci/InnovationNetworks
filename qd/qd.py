@@ -158,8 +158,14 @@ class QualityDiversitySearch:
                 renumbered_history = convert_tuples(history)
                 G = nx.Graph()
                 G.add_edges_from(renumbered_history)
-                NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
-                obj: np.float64 = NCTF
+                NCTF_list = []
+                TTF_list = []
+                failed_list = []
+                for i in range(100):
+                    NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
+                    NCTF_list.append(NCTF)
+                
+                obj: np.float64 = sum(NCTF_list)/len(NCTF_list)
                 objs.append(-obj)
 
             # Send the results back to the scheduler
