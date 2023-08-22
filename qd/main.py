@@ -27,7 +27,7 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 20
+    num_generations = 10
 
     # Set Up Julia
     jl_main, thread_num = JuliaInitializer().initialize()
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     qds = QualityDiversitySearch(
         history2bd=history2bd,
         iteration_num=num_generations,
-        thread_num=2,
+        thread_num=1,
         jl_main=jl_main,
         dim=dim,
         result_dir_path=f"results/NCTF/",

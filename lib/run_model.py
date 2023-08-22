@@ -29,4 +29,7 @@ def run_model(params: Params) -> List[Tuple[int, int]]:
         caller = env.get_caller()
         callee = env.get_callee(caller)
         env.interact(caller, callee)
+        num_nodes = len(set([item for sublist in env.history for item in sublist]))
+        if num_nodes == 100:
+            break
     return env.history
