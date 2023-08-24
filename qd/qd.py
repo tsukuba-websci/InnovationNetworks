@@ -8,6 +8,8 @@ from lib.utils import *
 from multiprocessing import Pool
 from typing import Any, List, Union
 from lib.run_innovation_process import *
+from lib.utils import history_to_csv, history_to_graph, graph_to_json
+from lib.history2vec import History2Vec, History2VecResult
 
 import numpy as np
 import pandas as pd
@@ -29,6 +31,7 @@ class QualityDiversitySearch:
     result_dir_path: str
     archives_dir_path: str
     iteration_num: int
+    target: str
 
     def __init__(
         self,
@@ -39,6 +42,7 @@ class QualityDiversitySearch:
         iteration_num: int,
         thread_num: int,
         jl_main: Any,
+        target: str,
         dim: int,
         cells: int,
         result_dir_path: str,
@@ -50,6 +54,7 @@ class QualityDiversitySearch:
         self.iteration_num = iteration_num
         self.thread_num = thread_num
         self.jl_main = jl_main
+        self.target = target
         self.dim = dim
         self.cells = cells
         self.result_dir_path = result_dir_path
@@ -164,9 +169,23 @@ class QualityDiversitySearch:
                 for i in range(100):
                     NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
                     NCTF_list.append(NCTF)
+                    TTF_list.append(TTF)
                 
-                obj: np.float64 = sum(NCTF_list)/len(NCTF_list)
-                objs.append(-obj)
+                average_NCTF = sum(NCTF_list)/len(NCTF_list)
+                average_TTF = sum(TTF_list)/len(TTF_list)
+
+                if self.target == "min_NCTF":
+                    obj: np.float64 = average_NCTF
+                    objs.append(-obj)
+                elif self.target == "max_NCTF":
+                    obj: np.float64 = average_NCTF
+                    objs.append(obj)
+                elif self.target == "min_TTF":
+                    obj: np.float64 = average_TTF
+                    objs.append(-obj)
+                elif self.target == "max_TTF":
+                    obj: np.float64 = average_TTF
+                    objs.append(obj)
 
             # Send the results back to the scheduler
             optimizer.tell(objs, bcs)
@@ -179,4 +198,31 @@ class QualityDiversitySearch:
 
         # save best result as csv
         if not os.path.exists(f"{self.result_dir_path}/best.csv"):
-            df.head(1).to_csv(f"{self.result_dir_path}/best.csv", index=False)
+            df.head(5).to_csv(f"{self.result_dir_path}/best.csv", index=False)
+        if not os.path.exists(f"{self.result_dir_path}/worst.csv"):
+            df.tail(5).to_csv(f"{self.result_dir_path}/worst.csv", index=False)
+
+    def analyse(self):
+        history2vec_ = History2Vec(self.jl_main, self.thread_num)
+
+        best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv")
+        worst_parameter_set = pd.read_csv(f"{self.result_dir_path}/worst.csv")
+
+        parameters_set = {"best": best_parameter_set, "worst": worst_parameter_set}
+
+        for set_name, parameters in parameters_set.items():
+            for index, row in parameters.iterrows():
+
+                # Run Urn Model
+                print("Running Urn Model")
+                history = run_model(Params(rho=row['rho'], nu=row['nu'], recentness=row['recentness'], frequency=row['frequency'], steps=20000))
+
+                # Convert History to JSON
+                print("Converting history to JSON")
+                history_to_csv(history=history, location=f"{self.result_dir_path}/{set_name}/{index}/history.csv")
+                graph = history_to_graph(csv_location=f"{self.result_dir_path}/{set_name}/{index}/history.csv")
+                graph_to_json(graph, f"../web_server/src/data/{set_name}{index}.json")
+
+                # Calculate Metrics
+                print("Calculating metrics")
+                history2vec_.history2vec(history=history, interval_num=50)

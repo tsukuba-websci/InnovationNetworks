@@ -63,16 +63,16 @@ def run_innovation_process(G, l, k, dv, steps):
                     pass
             history.append(step_history)
 
-        print(f"Innovation unsuccessful after {steps} steps.")
+        # print(f"Innovation unsuccessful after {steps} steps.")
         return 999999, 999999, True
 
 
     except InnovationAchieved:
-        print(f"Innovation occured after {step+1} steps.")
+        # print(f"Innovation occured after {step+1} steps.")
         NCTF = len([item for sublist in history for item in sublist])
         TTF = len(history)
         return NCTF, TTF, False
     
     except NotEnoughNodes:
-        print(f"Not Enough Nodes")
+        # print(f"Not Enough Nodes")
         return 999999, 999999, True    

@@ -47,7 +47,7 @@ def plot_data(data: dict, data_min: dict, ymax: float, file_name: str, palette: 
         palette=palette,
     )
     plt.xlabel("Generation", fontsize=24)
-    plt.ylabel("d", fontsize=24)
+    plt.ylabel("NCTF", fontsize=24)
     plt.ylim(0, ymax)
     plt.tight_layout()
     plt.savefig(f"results/timeline/qd/{file_name}.png", dpi=300)
