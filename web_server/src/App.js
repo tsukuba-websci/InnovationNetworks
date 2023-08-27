@@ -4,6 +4,7 @@ import EmpiricalComparison from './components/EmpiricalComparison.js';
 import InnovationComparison from './components/InnovationComparison.js';
 import SimulationComparison from './components/SimulationComparison.js';
 import Timeline from './components/Timeline.js';
+import BestWorst from './components/BestWorst.js';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path='/simulation' element={<SimulationComparison />} />
             <Route path='/timeline' element={<Timeline />} />
             <Route path='/innovation' element={<InnovationComparison />} />
+            <Route path='/best-worst' element={<BestWorst />} />
           </Routes>
         </main>
       </Router>

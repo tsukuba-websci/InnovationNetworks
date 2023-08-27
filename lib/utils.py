@@ -6,6 +6,8 @@ import json
 import pandas as pd
 import networkx as nx
 from typing import Any, NamedTuple
+import csv
+import os
 
 class History2VecResult(NamedTuple):
     gamma: float
@@ -98,17 +100,23 @@ def history_to_graph(csv_location) -> Any:
     return G
 
 def graph_to_json(G: Any, json_location) -> None:
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(json_location), exist_ok=True)
+    
     data = nx.node_link_data(G)
     with open(json_location, 'w') as f:
         json.dump(data, f)
 
 def history_to_csv(history, location):
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(location), exist_ok=True)
+    
     with open(location, 'w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(['caller', 'callee'])
         for item in history:
             csv_writer.writerow(item)
-    pass
+
 
 def read_graph_from_json(json_location):
     with open(json_location, 'r') as f:
@@ -131,3 +139,23 @@ def convert_tuples(tuples_list):
     converted_tuples = [(number_map[num1], number_map[num2]) for num1, num2 in tuples_list]
     
     return converted_tuples
+
+def metrics_to_csv(result: History2VecResult, filename: str):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, 'w', newline='') as csvfile:
+        fieldnames = ['c', 'g', 'gamma', 'h', 'nc', 'no', 'oc', 'oo', 'r', 'y']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({
+            'c': result.c,
+            'g': result.g,
+            'gamma': result.gamma,
+            'h': result.h,
+            'nc': result.nc,
+            'no': result.no,
+            'oc': result.oc,
+            'oo': result.oo,
+            'r': result.r,
+            'y': result.y,
+        })

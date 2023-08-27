@@ -9,3 +9,10 @@ web-app/src/components/graph.json
 *.png
 utils/__pycache__
 visualisation/build
+lib/__pycache__
+*/__pycache__
+qd/models
+qd/history2bd/__pycache__
+*.pkl
+visualise/graphs/__pycache__
+web_server/build

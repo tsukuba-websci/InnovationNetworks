@@ -5,8 +5,12 @@ from utils import *
 import networkx as nx
 import random
 
-class BreakAllLoops(Exception):
+class InnovationAchieved(Exception):
     pass
+
+class NotEnoughNodes(Exception):
+    pass
+
 
 def run_innovation_process(G, l, k, dv, steps):
 
@@ -15,15 +19,18 @@ def run_innovation_process(G, l, k, dv, steps):
     N = G.number_of_nodes()
     knowledge = np.zeros((N,l))
 
-    selected_indices = np.random.choice(N, l, replace=False)
-    for idx, row_idx in enumerate(selected_indices):
-        knowledge[row_idx][idx] = k
-
     history = []
-    failed = False
 
     # Run Innovation Simulation
     try:
+        if N>l:
+            # distribute initial knowledge
+            selected_indices = np.random.choice(N, l, replace=False)
+            for idx, row_idx in enumerate(selected_indices):
+                knowledge[row_idx][idx] = k
+        else:
+            raise NotEnoughNodes
+
         for step in range(steps):
             selected_nodes = set()
             step_history = []
@@ -49,20 +56,23 @@ def run_innovation_process(G, l, k, dv, steps):
                     # Check if every column in any row of knowledge is k or greater
                     if all(item >= k for item in knowledge[caller-1]) or all(item >= k for item in knowledge[callee-1]):
                         history.append(step_history)
-                        raise BreakAllLoops
+                        raise InnovationAchieved
                 
                 else:
                     # Handling for no available neighbors
                     pass
             history.append(step_history)
 
-        failed = True
-        print(f"Innovation unsuccessful after {steps} steps.")
-        return 0, 0, failed
+        # print(f"Innovation unsuccessful after {steps} steps.")
+        return 999999999, 999999999, True
 
 
-    except BreakAllLoops:
-        print(f"Innovation occured after {step+1} steps.")
+    except InnovationAchieved:
+        # print(f"Innovation occured after {step+1} steps.")
         NCTF = len([item for sublist in history for item in sublist])
         TTF = len(history)
-        return NCTF, TTF, failed
+        return NCTF, TTF, False
+    
+    except NotEnoughNodes:
+        # print(f"Not Enough Nodes")
+        return 999999999, 999999999, True    
