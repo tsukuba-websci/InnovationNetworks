@@ -64,7 +64,7 @@ def run_innovation_process(G, l, k, dv, steps):
             history.append(step_history)
 
         # print(f"Innovation unsuccessful after {steps} steps.")
-        return 999999, 999999, True
+        return 999999999, 999999999, True
 
 
     except InnovationAchieved:
@@ -75,4 +75,4 @@ def run_innovation_process(G, l, k, dv, steps):
     
     except NotEnoughNodes:
         # print(f"Not Enough Nodes")
-        return 999999, 999999, True    
+        return 999999999, 999999999, True    

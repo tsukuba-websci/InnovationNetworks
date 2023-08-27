@@ -6,6 +6,7 @@ import json
 import pandas as pd
 import networkx as nx
 from typing import Any, NamedTuple
+import csv
 import os
 
 class History2VecResult(NamedTuple):
@@ -138,3 +139,23 @@ def convert_tuples(tuples_list):
     converted_tuples = [(number_map[num1], number_map[num2]) for num1, num2 in tuples_list]
     
     return converted_tuples
+
+def metrics_to_csv(result: History2VecResult, filename: str):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, 'w', newline='') as csvfile:
+        fieldnames = ['c', 'g', 'gamma', 'h', 'nc', 'no', 'oc', 'oo', 'r', 'y']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({
+            'c': result.c,
+            'g': result.g,
+            'gamma': result.gamma,
+            'h': result.h,
+            'nc': result.nc,
+            'no': result.no,
+            'oc': result.oc,
+            'oo': result.oo,
+            'r': result.r,
+            'y': result.y,
+        })

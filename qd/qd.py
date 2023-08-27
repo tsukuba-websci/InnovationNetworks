@@ -10,6 +10,7 @@ from typing import Any, List, Union
 from lib.run_innovation_process import *
 from lib.utils import history_to_csv, history_to_graph, graph_to_json
 from lib.history2vec import History2Vec, History2VecResult
+import os
 
 import numpy as np
 import pandas as pd
@@ -26,8 +27,8 @@ class QualityDiversitySearch:
     l: int
     dv: int
     history2bd: History2BD
-    thread_num: int = 0
-    jl_main: Any
+    thread_num: int = 8
+    jl_main: Any =  None
     result_dir_path: str
     archives_dir_path: str
     iteration_num: int
@@ -146,7 +147,7 @@ class QualityDiversitySearch:
 
         start_time = time.time()
 
-        for iter in tqdm(range(already, self.iteration_num), desc="innovation search"):
+        for iter in tqdm(range(already, self.iteration_num), desc=f"Innovation Search: {self.target}"):
             # Request models from the scheduler
             sols = optimizer.ask()
 
@@ -196,33 +197,22 @@ class QualityDiversitySearch:
             if iter % 25 == 0:
                 self.print_status(archive, iter, start_time)
 
-        # save best result as csv
-        if not os.path.exists(f"{self.result_dir_path}/best.csv"):
+            # save best result as csv
+            # os.makedirs(f"{self.result_dir_path}/best", exist_ok=True)
+
             df.head(5).to_csv(f"{self.result_dir_path}/best.csv", index=False)
-        if not os.path.exists(f"{self.result_dir_path}/worst.csv"):
-            df.tail(5).to_csv(f"{self.result_dir_path}/worst.csv", index=False)
 
     def analyse(self):
         history2vec_ = History2Vec(self.jl_main, self.thread_num)
 
         best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv")
-        worst_parameter_set = pd.read_csv(f"{self.result_dir_path}/worst.csv")
 
-        parameters_set = {"best": best_parameter_set, "worst": worst_parameter_set}
+        for index, row in best_parameter_set.iterrows():
+            history = run_model(Params(rho=row['rho'], nu=row['nu'], recentness=row['recentness'], frequency=row['frequency'], steps=20000))
 
-        for set_name, parameters in parameters_set.items():
-            for index, row in parameters.iterrows():
+            history_to_csv(history=history, location=f"{self.result_dir_path}/history/{index}.csv")
+            graph = history_to_graph(csv_location=f"{self.result_dir_path}/history/{index}.csv")
+            graph_to_json(graph, f"../web_server/src/data/{self.target}{index}.json")
 
-                # Run Urn Model
-                print("Running Urn Model")
-                history = run_model(Params(rho=row['rho'], nu=row['nu'], recentness=row['recentness'], frequency=row['frequency'], steps=20000))
-
-                # Convert History to JSON
-                print("Converting history to JSON")
-                history_to_csv(history=history, location=f"{self.result_dir_path}/{set_name}/{index}/history.csv")
-                graph = history_to_graph(csv_location=f"{self.result_dir_path}/{set_name}/{index}/history.csv")
-                graph_to_json(graph, f"../web_server/src/data/{set_name}{index}.json")
-
-                # Calculate Metrics
-                print("Calculating metrics")
-                history2vec_.history2vec(history=history, interval_num=50)
+            metrics = history2vec_.history2vec(history=history, interval_num=50)
+            metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")

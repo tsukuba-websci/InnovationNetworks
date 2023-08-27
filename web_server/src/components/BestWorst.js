@@ -12,16 +12,14 @@ import Graph from './Graph';
 // import graph_data_7 from '../data/graph_simulation_7.json';
 // import graph_data_8 from '../data/graph_simulation_8.json';
 
-import best0 from '../data/best0.json';
-import best1 from '../data/best1.json';
-import best2 from '../data/best2.json';
-import best3 from '../data/best3.json';
-import best4 from '../data/best4.json';
-import worst0 from '../data/worst0.json';
-import worst1 from '../data/worst1.json';
-import worst2 from '../data/worst2.json';
-import worst3 from '../data/worst3.json';
-import worst4 from '../data/worst4.json';
+import best0 from '../data/min_NCTF0.json';
+import best1 from '../data/min_NCTF1.json';
+import best2 from '../data/min_NCTF2.json';
+import best3 from '../data/min_NCTF3.json';
+import worst1 from '../data/max_NCTF0.json';
+import worst2 from '../data/max_NCTF1.json';
+import worst3 from '../data/max_NCTF2.json';
+import worst4 from '../data/max_NCTF3.json';
 
 function BestWorst() {
   const [width, height] = useWindowSize();

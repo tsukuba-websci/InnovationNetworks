@@ -27,23 +27,19 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 250
-
-    # Set Up Julia
-    jl_main, thread_num = JuliaInitializer().initialize()
+    num_generations = 251
 
     # targets = ["min_NCTF", "max_NCTF", "min_TTF", "max_TTF"]
 
-    targets = ["NCTF"]
-
-
+    targets = ["min_NCTF", "max_NCTF"]
+    qds_list = []
     for target in targets:
         # run QD
         qds = QualityDiversitySearch(
             history2bd=history2bd,
             iteration_num=num_generations,
-            thread_num=3,
-            jl_main=jl_main,
+            thread_num=12,
+            jl_main=None,
             dim=dim,
             target=target,
             result_dir_path=f"results/{target}",
@@ -53,6 +49,13 @@ if __name__ == "__main__":
             dv=dv
         )
 
-        # qds.run()
+        qds_list.append(qds)
 
+    # for qds in qds_list:
+    #     qds.run()
+    
+    jl_main, thread_num = JuliaInitializer().initialize()
+
+    for qds in qds_list:
+        qds.jl_main = jl_main
         qds.analyse()
