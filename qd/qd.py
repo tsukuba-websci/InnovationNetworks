@@ -4,12 +4,13 @@ import time
 import networkx as nx
 import sys
 sys.path.append("..")
-from lib.utils import *
 from multiprocessing import Pool
 from typing import Any, List, Union
 from lib.run_innovation_process import *
-from lib.utils import history_to_csv, history_to_graph, graph_to_json
+from lib.utils import *
 from lib.history2vec import History2Vec, History2VecResult
+from lib.graph2metrics import Graph2Metrics, Metrics
+
 import os
 
 import numpy as np
@@ -198,13 +199,9 @@ class QualityDiversitySearch:
                 self.print_status(archive, iter, start_time)
 
             # save best result as csv
-            # os.makedirs(f"{self.result_dir_path}/best", exist_ok=True)
-
-            df.head(5).to_csv(f"{self.result_dir_path}/best.csv", index=False)
+            df.head(30).to_csv(f"{self.result_dir_path}/best.csv", index=False)
 
     def analyse(self):
-        history2vec_ = History2Vec(self.jl_main, self.thread_num)
-
         best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv")
 
         for index, row in best_parameter_set.iterrows():
@@ -214,5 +211,5 @@ class QualityDiversitySearch:
             graph = history_to_graph(csv_location=f"{self.result_dir_path}/history/{index}.csv")
             graph_to_json(graph, f"../web_server/src/data/{self.target}{index}.json")
 
-            metrics = history2vec_.history2vec(history=history, interval_num=50)
+            metrics = Graph2Metrics().graph2metrics(graph=graph)
             metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")

@@ -27,7 +27,7 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 251
+    num_generations = 253
 
     # targets = ["min_NCTF", "max_NCTF", "min_TTF", "max_TTF"]
 
@@ -51,11 +51,8 @@ if __name__ == "__main__":
 
         qds_list.append(qds)
 
-    # for qds in qds_list:
-    #     qds.run()
-    
-    jl_main, thread_num = JuliaInitializer().initialize()
-
     for qds in qds_list:
-        qds.jl_main = jl_main
+        qds.run()
+    
+    for qds in qds_list:
         qds.analyse()
