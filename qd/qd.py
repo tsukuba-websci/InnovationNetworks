@@ -8,8 +8,8 @@ from multiprocessing import Pool
 from typing import Any, List, Union
 from lib.run_innovation_process import *
 from lib.utils import *
-from lib.history2vec import History2Vec, History2VecResult
-from lib.graph2metrics import Graph2Metrics, Metrics
+from lib.graph2metrics import Graph2Metrics
+import matplotlib.pyplot as plt
 
 import os
 
@@ -211,5 +211,34 @@ class QualityDiversitySearch:
             graph = history_to_graph(csv_location=f"{self.result_dir_path}/history/{index}.csv")
             graph_to_json(graph, f"../web_server/src/data/{self.target}{index}.json")
 
-            metrics = Graph2Metrics().graph2metrics(graph=graph)
-            metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")
+            metrics_calculated = False
+            graph_saved = False
+
+            while not metrics_calculated:
+                try:
+                    metrics = Graph2Metrics().graph2metrics(graph=graph)
+                    metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")
+                    metrics_calculated = True
+                    print(f"{index} is connected: {nx.is_connected(graph)}")
+
+                except:
+                    if not graph_saved:
+                        print(f"{index} is connected: {nx.is_connected(graph)}")
+                        print(f"{index} num nodes: {graph.number_of_nodes()}")
+                        print(f"{index} num connected comps: {nx.number_connected_components(graph)}")
+                        print(f"{index} connected_comps: {[len(c) for c in sorted(nx.connected_components(graph), key=len, reverse=True)]}")
+
+                        plt.clf()  # Clear the current figure if needed
+                        pos = nx.spring_layout(graph, k=0.6)     # dict
+
+                        fig=plt.figure(figsize=(10,2),dpi=300)
+                        nx.draw_networkx(graph, pos=pos, node_size=800, with_labels=True,node_color='y')
+                        # Save the figure to an image file
+                        plt.savefig(f"{index}.png")
+                        plt.show()
+                        graph_saved = True
+                        
+                    pass
+
+            # Optionally, if you're in a non-interactive context (like a script)
+            plt.show()  # Show the final plot if needed

@@ -27,7 +27,7 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 253
+    num_generations = 250
 
     # targets = ["min_NCTF", "max_NCTF", "min_TTF", "max_TTF"]
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         qds = QualityDiversitySearch(
             history2bd=history2bd,
             iteration_num=num_generations,
-            thread_num=12,
+            thread_num=4,
             jl_main=None,
             dim=dim,
             target=target,
