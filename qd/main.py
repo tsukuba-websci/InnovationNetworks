@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 import sys
 sys.path.append("..")
-import pandas as pd
 from history2bd.main import History2BD
 
 from lib.julia_initializer import JuliaInitializer
@@ -27,9 +26,11 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 250
+    num_generations = 25
 
     # targets = ["min_NCTF", "max_NCTF", "min_TTF", "max_TTF"]
+
+    jl_main, thread_num = JuliaInitializer().initialize()
 
     targets = ["min_NCTF", "max_NCTF"]
     qds_list = []
@@ -38,8 +39,8 @@ if __name__ == "__main__":
         qds = QualityDiversitySearch(
             history2bd=history2bd,
             iteration_num=num_generations,
-            thread_num=4,
-            jl_main=None,
+            thread_num=8,
+            jl_main=jl_main,
             dim=dim,
             target=target,
             result_dir_path=f"results/{target}",

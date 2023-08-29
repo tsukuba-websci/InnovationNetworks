@@ -42,5 +42,5 @@ class JuliaInitializer:
         from julia import Main  # type: ignore
 
         self.jl_main = Main
-
+        self.jl_main.include("../lib/Models.jl")
         self.jl_main.include("../lib/history2vec.jl")
