@@ -8,6 +8,7 @@ import networkx as nx
 from typing import Any, NamedTuple
 import csv
 import os
+from lib.graph2metrics import Metrics
 
 class History2VecResult(NamedTuple):
     gamma: float
@@ -99,6 +100,11 @@ def history_to_graph(csv_location) -> Any:
     G = nx.from_pandas_edgelist(df, 'caller', 'callee')
     return G
 
+def history_object_to_graph(history) -> Any:
+    df = pd.DataFrame(history, columns=['caller', 'callee'])
+    G = nx.from_pandas_edgelist(df, 'caller', 'callee')
+    return G
+
 def graph_to_json(G: Any, json_location) -> None:
     # Create directory if it doesn't exist
     os.makedirs(os.path.dirname(json_location), exist_ok=True)
@@ -140,7 +146,7 @@ def convert_tuples(tuples_list):
     
     return converted_tuples
 
-def metrics_to_csv(result: History2VecResult, filename: str):
+def dynamic_metrics_to_csv(result: History2VecResult, filename: str):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w', newline='') as csvfile:
         fieldnames = ['c', 'g', 'gamma', 'h', 'nc', 'no', 'oc', 'oo', 'r', 'y']
@@ -158,4 +164,29 @@ def metrics_to_csv(result: History2VecResult, filename: str):
             'oo': result.oo,
             'r': result.r,
             'y': result.y,
+        })
+
+def metrics_to_csv(metrics: Metrics, filename: str):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, 'w', newline='') as csvfile:
+        fieldnames = ['global_clustering_coefficient',
+                      'average_path_length',
+                        'average_degree',
+                        'network_diameter',
+                        'average_degree_connectivity',
+                        'average_neighbor_degree',
+                        'local_efficiency',
+                        'global_efficiency']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({
+            'global_clustering_coefficient': metrics.global_cluster_coefficient,
+            'average_path_length': metrics.average_path_length,
+            'average_degree': metrics.average_degree,
+            'network_diameter': metrics.network_diameter,
+            'average_degree_connectivity': metrics.average_degree_connectivity,
+            'average_neighbor_degree': metrics.average_neighbor_degree,
+            'local_efficiency': metrics.local_efficiency,
+            'global_efficiency': metrics.global_efficiency
         })

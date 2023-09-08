@@ -4,13 +4,16 @@ import time
 import networkx as nx
 import sys
 sys.path.append("..")
-from lib.utils import *
 from multiprocessing import Pool
 from typing import Any, List, Union
 from lib.run_innovation_process import *
-from lib.utils import history_to_csv, history_to_graph, graph_to_json
-from lib.history2vec import History2Vec, History2VecResult
+from lib.utils import *
+from lib.graph2metrics import Graph2Metrics
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from typing import List
 import os
+import csv
 
 import numpy as np
 import pandas as pd
@@ -20,7 +23,16 @@ from history2bd.main import History2BD
 from ribs.archives import CVTArchive
 from tqdm import tqdm
 
-from lib.run_model import Params, run_model
+@dataclass
+class Params:
+    rho: float
+    nu: float
+    s: str
+    gamma: float
+    eta: float
+    steps: int
+    nodes: int = 100
+    threads: int = 1
 
 class QualityDiversitySearch:
     k: int
@@ -70,7 +82,7 @@ class QualityDiversitySearch:
                 archive = pickle.load(f)
         else:
             archive = CVTArchive(
-                solution_dim=4,
+                solution_dim=2,
                 cells=self.cells,
                 ranges=[(-5, 5) for _ in range(self.dim)],
             )
@@ -87,29 +99,30 @@ class QualityDiversitySearch:
         df.rename(
             columns={
                 "solution_0": "rho",
-                "solution_1": "nu",
-                "solution_2": "recentness",
-                "solution_3": "frequency",
+                "solution_1": "nu"
             },
             inplace=True,
         )
         df["objective"] = -df["objective"]
-        df.rename(columns={"objective": "distance"}, inplace=True)
-        df = df[["rho", "nu", "recentness", "frequency", "distance"]].sort_values(by="distance", ascending=True)
+        df.rename(columns={"objective": "NCTF"}, inplace=True)
+        df = df[["rho", "nu", "NCTF"]].sort_values(by="NCTF", ascending=True)
         df.to_csv(f"{self.archives_dir_path}/{iter:0>8}.csv", index=False)
         return df
 
     def set_params_list(self, sols: List[np.ndarray]) -> List[Params]:
-        rhos: List[float] = list(map(lambda sol: sol[0].item(), sols))
-        nus: List[float] = list(map(lambda sol: sol[1].item(), sols))
-        recentnesses: List[float] = list(map(lambda sol: sol[2].item(), sols))
-        frequency: List[float] = list(map(lambda sol: sol[3].item(), sols))
-        steps = [20000 for _ in range(len(rhos))]
+        rhos: List[int] = list(map(lambda sol: sol[0].item(), sols))
+        nus: List[int] = list(map(lambda sol: sol[1].item(), sols))
+        s: List[str] = ["asw" for _ in range(len(rhos))]
+        gammas: List[float] = [0.5 for _ in range(len(rhos))]
+        etas: List[float] = [0.5 for _ in range(len(rhos))]
+        steps: List[int] = [9999999 for _ in range(len(rhos))]
+        nodes: List[int] = [100 for _ in range(len(rhos))]
+        threads: List[int] = [self.thread_num for _ in range(len(rhos))]
 
-        params_list = map(
+        params_list = list(map(
             lambda t: Params(*t),
-            zip(rhos, nus, recentnesses, frequency, steps),
-        )
+            zip(rhos, nus, s, gammas, etas, steps, nodes, threads),
+        ))
         return params_list
 
     def print_status(self, archive: CVTArchive, iter: int, start_time: time) -> None:
@@ -126,12 +139,10 @@ class QualityDiversitySearch:
         if os.path.exists(self.archives_dir_path):
             already = len(os.listdir(self.archives_dir_path))
 
-        initial_model = np.zeros(4)
+        initial_model = np.zeros(2)
         bounds = [
-            (2, 30),  # 1 <= rho <= 20
-            (2, 30),  # 1 <= nu <= 20
-            (-1, 1),  # -1 <= recentness <= 1
-            (-1, 1),  # -1 <= frequency <= 1
+            (1, 5),
+            (1, 30),
         ]
         emitters_ = [
             emitters.EvolutionStrategyEmitter(
@@ -153,9 +164,7 @@ class QualityDiversitySearch:
 
             params_list = self.set_params_list(sols)
 
-            # Evaluate the models and record the objectives and measuress.
-            with Pool(self.thread_num) as pool:
-                histories = pool.map(run_model, params_list)
+            histories = self.jl_main.parallel_run_waves_model(params_list)
 
             bcs = self.history2bd.run(histories)
             objs = []
@@ -166,8 +175,7 @@ class QualityDiversitySearch:
                 G.add_edges_from(renumbered_history)
                 NCTF_list = []
                 TTF_list = []
-                failed_list = []
-                for i in range(100):
+                for _ in range(100):
                     NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
                     NCTF_list.append(NCTF)
                     TTF_list.append(TTF)
@@ -197,22 +205,54 @@ class QualityDiversitySearch:
             if iter % 25 == 0:
                 self.print_status(archive, iter, start_time)
 
-            # save best result as csv
-            # os.makedirs(f"{self.result_dir_path}/best", exist_ok=True)
-
-            df.head(5).to_csv(f"{self.result_dir_path}/best.csv", index=False)
+            # Filter the DataFrame where innovation failed
+            # filtered_df = df[df['NCTF'] > -9999]
+            # filtered_df.head(30).to_csv(f"{self.result_dir_path}/best.csv", index=False)
+            df.head(30).to_csv(f"{self.result_dir_path}/best.csv", index=False)
 
     def analyse(self):
-        history2vec_ = History2Vec(self.jl_main, self.thread_num)
-
         best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv")
 
         for index, row in best_parameter_set.iterrows():
-            history = run_model(Params(rho=row['rho'], nu=row['nu'], recentness=row['recentness'], frequency=row['frequency'], steps=20000))
+            history = self.jl_main.parallel_run_waves_model([Params(rho=row['rho'], nu=row['nu'], s="asw", gamma=0.5, eta=0.5, steps=1000000, nodes=100, threads=1)])[0]
 
             history_to_csv(history=history, location=f"{self.result_dir_path}/history/{index}.csv")
             graph = history_to_graph(csv_location=f"{self.result_dir_path}/history/{index}.csv")
             graph_to_json(graph, f"../web_server/src/data/{self.target}{index}.json")
 
-            metrics = history2vec_.history2vec(history=history, interval_num=50)
+            metrics = Graph2Metrics().graph2metrics(graph=graph)
             metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")
+
+    def analyse_statistics(self):
+        number_networks = 10
+        number_simulations = 10000
+
+        best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv").iloc[0]
+
+        # Open a new csv file to write the NCTF scores
+        with open(f"{self.result_dir_path}/best_nctf_scores.csv", 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            
+            # Write header
+            csv_writer.writerow(["NCTF"])
+
+            for network in range(number_networks):
+                for simulation in range(number_simulations):
+                    # print(f"Running simulation {simulation} for network {network}")
+                    rho_value = int(best_parameter_set['rho'])
+                    nu_value = int(best_parameter_set['nu'])
+                    s_value = "asw"
+                    gamma_value = 0.5
+                    eta_value = 0.5
+                    steps_value = 1000000
+                    nodes_value = 100
+
+                    raw_history = self.jl_main.run_waves_model(rho_value, nu_value, s_value, gamma_value, eta_value, steps=steps_value, nodes=nodes_value)[0].history
+                    best_history = convert_tuples(raw_history)
+                    G = history_object_to_graph(history=best_history)
+                    NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
+                    
+                    # Write the NCTF value to csv file
+                    csv_writer.writerow([NCTF])
+
+        print(f"NCTF scores saved to {self.result_dir_path}/nctf_scores.csv")

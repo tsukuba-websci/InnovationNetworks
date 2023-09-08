@@ -1,16 +1,7 @@
 import * as React from 'react'
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useWindowSize } from '@react-hook/window-size';
 import Graph from './Graph';
-
-// import graph_data_1 from '../data/graph_simulation_1.json';
-// import graph_data_2 from '../data/graph_simulation_2.json';
-// import graph_data_3 from '../data/graph_simulation_3.json';
-// import graph_data_4 from '../data/graph_simulation_4.json';
-// import graph_data_5 from '../data/graph_simulation_5.json';
-// import graph_data_6 from '../data/graph_simulation_6.json';
-// import graph_data_7 from '../data/graph_simulation_7.json';
-// import graph_data_8 from '../data/graph_simulation_8.json';
 
 import best0 from '../data/min_NCTF0.json';
 import best1 from '../data/min_NCTF1.json';
