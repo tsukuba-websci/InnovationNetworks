@@ -26,7 +26,7 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    num_generations = 25
+    num_generations = 50
 
     # targets = ["min_NCTF", "max_NCTF", "min_TTF", "max_TTF"]
 
@@ -52,8 +52,11 @@ if __name__ == "__main__":
 
         qds_list.append(qds)
 
-    for qds in qds_list:
-        qds.run()
+    # for qds in qds_list:
+    #     qds.run()
     
+    # for qds in qds_list:
+    #     qds.analyse()
+
     for qds in qds_list:
-        qds.analyse()
+        qds.analyse_statistics()

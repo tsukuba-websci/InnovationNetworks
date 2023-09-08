@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing import List
 import os
+import csv
 
 import numpy as np
 import pandas as pd
@@ -112,8 +113,8 @@ class QualityDiversitySearch:
         rhos: List[int] = list(map(lambda sol: sol[0].item(), sols))
         nus: List[int] = list(map(lambda sol: sol[1].item(), sols))
         s: List[str] = ["asw" for _ in range(len(rhos))]
-        gammas: List[float] = [0.1 for _ in range(len(rhos))]
-        etas: List[float] = [0.9 for _ in range(len(rhos))]
+        gammas: List[float] = [0.5 for _ in range(len(rhos))]
+        etas: List[float] = [0.5 for _ in range(len(rhos))]
         steps: List[int] = [9999999 for _ in range(len(rhos))]
         nodes: List[int] = [100 for _ in range(len(rhos))]
         threads: List[int] = [self.thread_num for _ in range(len(rhos))]
@@ -140,8 +141,8 @@ class QualityDiversitySearch:
 
         initial_model = np.zeros(2)
         bounds = [
-            (1, 10),
-            (1, 10),
+            (1, 5),
+            (1, 30),
         ]
         emitters_ = [
             emitters.EvolutionStrategyEmitter(
@@ -174,7 +175,7 @@ class QualityDiversitySearch:
                 G.add_edges_from(renumbered_history)
                 NCTF_list = []
                 TTF_list = []
-                for i in range(100):
+                for _ in range(100):
                     NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
                     NCTF_list.append(NCTF)
                     TTF_list.append(TTF)
@@ -213,7 +214,7 @@ class QualityDiversitySearch:
         best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv")
 
         for index, row in best_parameter_set.iterrows():
-            history = self.jl_main.parallel_run_waves_model([Params(rho=row['rho'], nu=row['nu'], s="asw", gamma=0.1, eta=0.9, steps=1000000, nodes=100, threads=1)])[0]
+            history = self.jl_main.parallel_run_waves_model([Params(rho=row['rho'], nu=row['nu'], s="asw", gamma=0.5, eta=0.5, steps=1000000, nodes=100, threads=1)])[0]
 
             history_to_csv(history=history, location=f"{self.result_dir_path}/history/{index}.csv")
             graph = history_to_graph(csv_location=f"{self.result_dir_path}/history/{index}.csv")
@@ -221,3 +222,37 @@ class QualityDiversitySearch:
 
             metrics = Graph2Metrics().graph2metrics(graph=graph)
             metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")
+
+    def analyse_statistics(self):
+        number_networks = 10
+        number_simulations = 10000
+
+        best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv").iloc[0]
+
+        # Open a new csv file to write the NCTF scores
+        with open(f"{self.result_dir_path}/best_nctf_scores.csv", 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            
+            # Write header
+            csv_writer.writerow(["NCTF"])
+
+            for network in range(number_networks):
+                for simulation in range(number_simulations):
+                    # print(f"Running simulation {simulation} for network {network}")
+                    rho_value = int(best_parameter_set['rho'])
+                    nu_value = int(best_parameter_set['nu'])
+                    s_value = "asw"
+                    gamma_value = 0.5
+                    eta_value = 0.5
+                    steps_value = 1000000
+                    nodes_value = 100
+
+                    raw_history = self.jl_main.run_waves_model(rho_value, nu_value, s_value, gamma_value, eta_value, steps=steps_value, nodes=nodes_value)[0].history
+                    best_history = convert_tuples(raw_history)
+                    G = history_object_to_graph(history=best_history)
+                    NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
+                    
+                    # Write the NCTF value to csv file
+                    csv_writer.writerow([NCTF])
+
+        print(f"NCTF scores saved to {self.result_dir_path}/nctf_scores.csv")

@@ -31,7 +31,7 @@ def run_innovation_process(G, l, k, dv, steps):
         else:
             raise NotEnoughNodes
 
-        for step in range(steps):
+        for _ in range(steps):
             selected_nodes = set()
             step_history = []
 
@@ -65,7 +65,6 @@ def run_innovation_process(G, l, k, dv, steps):
 
         # print(f"Innovation unsuccessful after {steps} steps.")
         return 999999999, 999999999, True
-
 
     except InnovationAchieved:
         # print(f"Innovation occured after {step+1} steps.")

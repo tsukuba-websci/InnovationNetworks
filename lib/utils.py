@@ -100,6 +100,11 @@ def history_to_graph(csv_location) -> Any:
     G = nx.from_pandas_edgelist(df, 'caller', 'callee')
     return G
 
+def history_object_to_graph(history) -> Any:
+    df = pd.DataFrame(history, columns=['caller', 'callee'])
+    G = nx.from_pandas_edgelist(df, 'caller', 'callee')
+    return G
+
 def graph_to_json(G: Any, json_location) -> None:
     # Create directory if it doesn't exist
     os.makedirs(os.path.dirname(json_location), exist_ok=True)
