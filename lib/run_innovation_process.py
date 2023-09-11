@@ -11,26 +11,27 @@ class InnovationAchieved(Exception):
 class NotEnoughNodes(Exception):
     pass
 
-
 def run_innovation_process(G, l, k, dv, steps):
 
     # Setup
     L = [k for _ in range(l)]
     N = G.number_of_nodes()
-    knowledge = np.zeros((N,l))
+    knowledge = np.zeros((N, l))
 
     history = []
+    total_knowledge_history = []  # List to store total knowledge at every time step
+    std_deviation_history = []  # List to store the standard deviation of the total knowledge of each node
 
     # Run Innovation Simulation
     try:
-        if N>l:
+        if N > l:
             # distribute initial knowledge
             selected_indices = np.random.choice(N, l, replace=False)
             for idx, row_idx in enumerate(selected_indices):
                 knowledge[row_idx][idx] = k
         else:
             raise NotEnoughNodes
-
+        
         for _ in range(steps):
             selected_nodes = set()
             step_history = []
@@ -61,17 +62,24 @@ def run_innovation_process(G, l, k, dv, steps):
                 else:
                     # Handling for no available neighbors
                     pass
+
+            # Calculation of total knowledge at this time step
+            total_knowledge_history.append(np.sum(knowledge))
+            
+            # Calculation of standard deviation of the total knowledge of each node at this time step
+            node_total_knowledge_history = np.sum(knowledge, axis=1)
+            std_dev = np.std(node_total_knowledge_history)
+            std_deviation_history.append(std_dev)
+
             history.append(step_history)
 
-        # print(f"Innovation unsuccessful after {steps} steps.")
-        return 999999999, 999999999, True
+        # Return statements with total_knowledge_history and std_deviation_history lists
+        return 999999999, 999999999, True, total_knowledge_history, std_deviation_history
 
     except InnovationAchieved:
-        # print(f"Innovation occured after {step+1} steps.")
         NCTF = len([item for sublist in history for item in sublist])
         TTF = len(history)
-        return NCTF, TTF, False
+        return NCTF, TTF, False, total_knowledge_history, std_deviation_history
     
     except NotEnoughNodes:
-        # print(f"Not Enough Nodes")
-        return 999999999, 999999999, True    
+        return 999999999, 999999999, True, total_knowledge_history, std_deviation_history

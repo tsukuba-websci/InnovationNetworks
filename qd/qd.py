@@ -208,12 +208,12 @@ class QualityDiversitySearch:
             # Filter the DataFrame where innovation failed
             # filtered_df = df[df['NCTF'] > -9999]
             # filtered_df.head(30).to_csv(f"{self.result_dir_path}/best.csv", index=False)
-            df.head(30).to_csv(f"{self.result_dir_path}/best.csv", index=False)
+            df.head(30).to_csv(f"{self.result_dir_path}/optimal_parameters.csv", index=False)
 
     def analyse(self):
-        best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv")
+        optimal_parameter_set = pd.read_csv(f"{self.result_dir_path}/optimal_parameters.csv")
 
-        for index, row in best_parameter_set.iterrows():
+        for index, row in optimal_parameter_set.iterrows():
             history = self.jl_main.parallel_run_waves_model([Params(rho=row['rho'], nu=row['nu'], s="asw", gamma=0.5, eta=0.5, steps=1000000, nodes=100, threads=1)])[0]
 
             history_to_csv(history=history, location=f"{self.result_dir_path}/history/{index}.csv")
@@ -224,21 +224,20 @@ class QualityDiversitySearch:
             metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")
 
     def analyse_statistics(self):
-        number_networks = 10
-        number_simulations = 10000
+        number_networks = 100
+        number_simulations = 1000
 
         best_parameter_set = pd.read_csv(f"{self.result_dir_path}/best.csv").iloc[0]
 
-        # Open a new csv file to write the NCTF scores
+        # Open a new csv file to write the NCTF scores, total_knowledge_history, and std_deviation_history
         with open(f"{self.result_dir_path}/best_nctf_scores.csv", 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             
             # Write header
-            csv_writer.writerow(["NCTF"])
+            csv_writer.writerow(["nctf", "ttf","total_knowledge_history", "standard_deviation_history", "rho", "nu"])
 
-            for network in range(number_networks):
-                for simulation in range(number_simulations):
-                    # print(f"Running simulation {simulation} for network {network}")
+            for _ in range(number_networks):
+                for _ in range(number_simulations):
                     rho_value = int(best_parameter_set['rho'])
                     nu_value = int(best_parameter_set['nu'])
                     s_value = "asw"
@@ -250,9 +249,13 @@ class QualityDiversitySearch:
                     raw_history = self.jl_main.run_waves_model(rho_value, nu_value, s_value, gamma_value, eta_value, steps=steps_value, nodes=nodes_value)[0].history
                     best_history = convert_tuples(raw_history)
                     G = history_object_to_graph(history=best_history)
-                    NCTF, TTF, failed = run_innovation_process(G, self.l, self.k, self.dv, 200)
+                    nctf, ttf, failed, total_knowledge_history, std_deviation_history = run_innovation_process(G, self.l, self.k, self.dv, 200)
                     
-                    # Write the NCTF value to csv file
-                    csv_writer.writerow([NCTF])
+                    # Convert the histories to string format
+                    total_knowledge_str = '|'.join(map(str, total_knowledge_history))
+                    std_deviation_str = '|'.join(map(str, std_deviation_history))
+                    
+                    # Write the NCTF, total_knowledge_str, and std_deviation_str to csv file
+                    csv_writer.writerow([nctf, ttf, total_knowledge_str, std_deviation_str, rho_value, nu_value])
 
-        print(f"NCTF scores saved to {self.result_dir_path}/nctf_scores.csv")
+        print(f"NCTF scores saved to {self.result_dir_path}/best_nctf_scores.csv")
