@@ -12,8 +12,8 @@ class NotEnoughNodes(Exception):
     pass
 
 def run_innovation_process_parallel(args):
-    G, l, k1, k2, num_iterations = args
-    return run_innovation_process(G, l, k1, k2, num_iterations)
+    G, l, k, dv, num_iterations = args
+    return run_innovation_process(G, l, k, dv, num_iterations)
 
 def run_innovation_process(G, l, k, dv, steps):
     print("Innovation Sim Running")

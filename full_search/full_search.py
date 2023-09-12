@@ -8,6 +8,7 @@ from tqdm import tqdm
 from dataclasses import dataclass
 from typing import List
 from multiprocessing import Pool
+from lib.julia_initializer import JuliaInitializer
 
 @dataclass
 class Params:
@@ -18,7 +19,6 @@ class Params:
     eta: float
     steps: int
     nodes: int = 100
-    thread_num: int = 1
 
 class InnovationType:
     k: int
@@ -32,28 +32,20 @@ class InnovationType:
 
 class FullSearch:
     innovation_type: InnovationType
-    thread_num: int
-    jl_main: Any = None
     results_dir_path: str
     target: str
 
     def __init__(
             self,
             innovation_type: InnovationType,
-            thread_num: int,
-            jl_main: Any,
             target: str,
             results_dir_path: str,
     ) -> None:
         self.innovation_type = innovation_type
-        self.thread_num = thread_num
-        self.jl_main = jl_main
         self.target = target
         self.results_dir_path = results_dir_path
 
-
     def run(self):
-        print(f"Running full search for {self.target} using {self.thread_num} threads")
         if not os.path.exists(self.results_dir_path):
             os.makedirs(self.results_dir_path)
 
@@ -68,40 +60,51 @@ class FullSearch:
             nodes = 100
 
             rho_min = 1
-            rho_max = 2
+            rho_max = 6
             nu_min = 1
-            nu_max = 2
+            nu_max = 31
 
-            num_networks = 1
-            innovation_simulations_per_network = 2
+            num_networks = 100
+            innovation_simulations_per_network = 1000
 
             # Define the range for rho and nu
             for rho in tqdm(range(rho_min, rho_max), desc="Rho",position=1, leave=True):
-                for nu in tqdm(range(nu_min, nu_max), desc="Nu", dynamic_ncols=True, position=0, leave=True):
+                for nu in tqdm(range(nu_min, nu_max), desc="Nu", position=0, leave=True):
+
+                    jl_main, thread_num = JuliaInitializer().initialize()
 
                     nctf_list = []
                     ttf_list = []
 
                     # Generate Networks
-                    print(f"Generating {num_networks} networks")
-                    params = Params(rho=rho, nu=nu, s=s, zeta=zeta, eta=eta, steps=steps, nodes=nodes, thread_num=1)
+                    print(f"Generating {num_networks} networks using {thread_num} threads")
+                    
+                    params = Params(rho=rho, nu=nu, s=s, zeta=zeta, eta=eta, steps=steps, nodes=nodes)
                     params_list: List[Params] = [params for _ in range(num_networks)]
-                    network_histories = self.jl_main.parallel_run_waves_model(params_list)
+                    network_histories = jl_main.parallel_run_waves_model(params_list)
+
+                    # print("Starting JL Shutdown")
+
+                    # jl_main.exit(0)
+
+                    # print("JL Main Exited")
 
                     parsed_networks_histories = [convert_tuples(network_history_raw) for network_history_raw in network_histories]
                     graphs = [history_object_to_graph(history=network_history_parsed) for network_history_parsed in parsed_networks_histories]
 
                     # Run Innovation Simulations
                     print(f"Running {innovation_simulations_per_network} innovation simulations per network")
-                    # Repeat each graph innovation_simulations_per_network times
-                    args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.k, 200) 
+
+                    args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.dv, 200) 
                         for G in graphs for _ in range(innovation_simulations_per_network)]
 
-                    with Pool() as pool:
+                    with Pool(processes=4) as pool:
                         results = pool.map(run_innovation_process_parallel, args)
 
-                    # Results processing remains the same
-                    for nctf, ttf in results:
+                    print("processing results")
+                    for result in results:
+                        nctf = result[0]
+                        ttf = result[1]
                         nctf_list.append(nctf)
                         ttf_list.append(ttf)
 

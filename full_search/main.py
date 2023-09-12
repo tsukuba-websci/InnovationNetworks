@@ -8,7 +8,6 @@ from full_search import FullSearch, InnovationType
 
 if __name__ == "__main__":
     # Set up Julia
-    jl_main, thread_num = JuliaInitializer().initialize()
 
     # todo: verify these values
     innovation_types = {
@@ -21,8 +20,6 @@ if __name__ == "__main__":
     for target in targets:
         fs = FullSearch(
             innovation_type=innovation_types[target],
-            thread_num=thread_num,
-            jl_main=jl_main,
             target=target,
             results_dir_path=f"results/{target}",
         )

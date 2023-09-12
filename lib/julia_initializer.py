@@ -44,3 +44,6 @@ class JuliaInitializer:
         self.jl_main = Main
         self.jl_main.include("../lib/Models.jl")
         self.jl_main.include("../lib/history2vec.jl")
+
+    def exit_julia(self):
+        self.jl_main.exit(0)

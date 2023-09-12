@@ -153,7 +153,6 @@ mutable struct Params
     eta::Float64
     steps::Int
     nodes::Int
-    thread_num::Int
 end
 
 function convert_to_params(py_params::Vector{PyObject})
@@ -165,8 +164,7 @@ function convert_to_params(py_params::Vector{PyObject})
         eta = py_p["eta"]
         steps = py_p["steps"]
         nodes = py_p["nodes"]
-        thread_num = py_p["thread_num"]
-        Params(rho, nu, s, zeta, eta, steps, nodes, thread_num)
+        Params(rho, nu, s, zeta, eta, steps, nodes)
     end for py_p in py_params]
 end
 
