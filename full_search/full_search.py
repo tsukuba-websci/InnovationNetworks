@@ -65,7 +65,7 @@ class FullSearch:
             nu_max = 31
 
             num_networks = 100
-            innovation_simulations_per_network = 100
+            innovation_simulations_per_network = 1000
 
             # Define the range for rho and nu
             for rho in tqdm(range(rho_min, rho_max), desc="Rho",position=1, leave=True):
@@ -85,8 +85,6 @@ class FullSearch:
                     graphs = [history_object_to_graph(history=network_history_parsed) for network_history_parsed in parsed_networks_histories]
 
                     # Run Innovation Simulations
-                    print(f"Running {innovation_simulations_per_network} innovation simulations per network")
-
                     args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.dv, 200) 
                         for G in graphs for _ in range(innovation_simulations_per_network)]
 
