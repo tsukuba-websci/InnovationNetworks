@@ -16,7 +16,6 @@ def run_innovation_process_parallel(args):
     return run_innovation_process(G, l, k, dv, num_iterations)
 
 def run_innovation_process(G, l, k, dv, steps):
-    print("Innovation Sim Running")
     # Setup
     L = [k for _ in range(l)]
     N = G.number_of_nodes()

@@ -65,7 +65,7 @@ class FullSearch:
             nu_max = 31
 
             num_networks = 100
-            innovation_simulations_per_network = 1000
+            innovation_simulations_per_network = 100
 
             # Define the range for rho and nu
             for rho in tqdm(range(rho_min, rho_max), desc="Rho",position=1, leave=True):
@@ -76,18 +76,10 @@ class FullSearch:
                     nctf_list = []
                     ttf_list = []
 
-                    # Generate Networks
-                    print(f"Generating {num_networks} networks using {thread_num} threads")
-                    
+                    # Generate Networks                    
                     params = Params(rho=rho, nu=nu, s=s, zeta=zeta, eta=eta, steps=steps, nodes=nodes)
                     params_list: List[Params] = [params for _ in range(num_networks)]
                     network_histories = jl_main.parallel_run_waves_model(params_list)
-
-                    # print("Starting JL Shutdown")
-
-                    # jl_main.exit(0)
-
-                    # print("JL Main Exited")
 
                     parsed_networks_histories = [convert_tuples(network_history_raw) for network_history_raw in network_histories]
                     graphs = [history_object_to_graph(history=network_history_parsed) for network_history_parsed in parsed_networks_histories]
@@ -98,7 +90,7 @@ class FullSearch:
                     args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.dv, 200) 
                         for G in graphs for _ in range(innovation_simulations_per_network)]
 
-                    with Pool(processes=4) as pool:
+                    with Pool(processes=12) as pool:
                         results = pool.map(run_innovation_process_parallel, args)
 
                     print("processing results")
