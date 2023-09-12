@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # todo: verify these values
     innovation_types = {
         "explorative" : InnovationType(1, 20, 1),
-        "exploitative" : InnovationType(20, 1, 1)
+        "exploitative" : InnovationType(20, 2, 1)
     }
 
     targets = ["explorative", "exploitative"]
