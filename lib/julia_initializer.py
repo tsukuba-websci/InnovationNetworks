@@ -37,6 +37,12 @@ class JuliaInitializer:
         from julia import Pkg  # type: ignore
 
         Pkg.activate(".")  # use ./Project.toml
+        Pkg.add("StatsBase")
+        Pkg.add("DataFrames")
+        Pkg.add("CSV")
+        Pkg.add("Graphs")
+        Pkg.add("PyCall")
+        Pkg.add(url="https://github.com/tsukuba-websci/DynamicNetworkMeasuringTools")
         Pkg.add(url="https://github.com/tsukuba-websci/PolyaUrnSimulator")
         Pkg.instantiate()  # install dependencies
 
