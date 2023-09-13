@@ -1,3 +1,4 @@
 [deps]
 DynamicNetworkMeasuringTools = "e1e586fd-41ac-4de6-ab4c-aebf94533247"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+PolyaUrnSimulator = "4bcabfa6-eebd-487a-8b4a-99bb3a891d86"
