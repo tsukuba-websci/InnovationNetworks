@@ -14,6 +14,7 @@ karateclub = "1.3.3"
 rsurn = {git = "https://github.com/tsukuba-websci/rsurn", rev = "ciaran/fix_connectedness"}
 ribs = "^0.5.2"
 seaborn = "^0.12.2"
+tdqm = "^0.0.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -40,19 +40,19 @@ function run_waves_model(
     rho::Int,
     nu::Int,
     s::String,
-    gamma::Float64,
+    zeta::Float64,
     eta::Float64;
     steps=10,
     nodes=100,
     on_classify::Union{Function,Nothing}=nothing,
     on_weight::Union{Function,Nothing}=nothing,
 )::Tuple{Environment,Vector{Int},Vector{LabelHistoryRecord}}
-    function f(N_k::Int, N_not_k::Int, gamma::Real)
-        return N_k / (N_k + gamma * N_not_k)
+    function f(N_k::Int, N_not_k::Int, zeta::Real)
+        return N_k / (N_k + zeta * N_not_k)
     end
 
-    function g(N_k::Int, N_not_k::Int, gamma::Real)
-        return (N_k + gamma * f(N_k, N_not_k, gamma) * N_not_k) / (N_k + gamma * N_not_k)
+    function g(N_k::Int, N_not_k::Int, zeta::Real)
+        return (N_k + zeta * f(N_k, N_not_k, zeta) * N_not_k) / (N_k + zeta * N_not_k)
     end
 
     last_label = 3
@@ -103,9 +103,9 @@ function run_waves_model(
         wv = Weights(zeros(length(env.buffers)))
 
         wc2 = 1
-        wc3 = gamma * f(N_k, N_not_k, gamma)
-        wc4 = g(N_k, N_not_k, gamma)
-        wc5 = eta * g(N_k, N_not_k, gamma)
+        wc3 = zeta * f(N_k, N_not_k, zeta)
+        wc4 = g(N_k, N_not_k, zeta)
+        wc5 = eta * g(N_k, N_not_k, zeta)
 
         if on_weight !== nothing
             on_weight(wc2, wc3, wc4, wc5)
@@ -149,11 +149,10 @@ mutable struct Params
     rho::Int
     nu::Int
     s::String
-    gamma::Float64
+    zeta::Float64
     eta::Float64
     steps::Int
     nodes::Int
-    threads::Int
 end
 
 function convert_to_params(py_params::Vector{PyObject})
@@ -161,12 +160,11 @@ function convert_to_params(py_params::Vector{PyObject})
         rho = py_p["rho"]
         nu = py_p["nu"]
         s = py_p["s"]
-        gamma = py_p["gamma"]
+        zeta = py_p["zeta"]
         eta = py_p["eta"]
         steps = py_p["steps"]
         nodes = py_p["nodes"]
-        threads = py_p["threads"]
-        Params(rho, nu, s, gamma, eta, steps, nodes, threads)
+        Params(rho, nu, s, zeta, eta, steps, nodes)
     end for py_p in py_params]
 end
 
@@ -179,7 +177,7 @@ function parallel_run_waves_model(py_params_list::Vector{PyObject})
         p = params_list[id]
         
         try
-            a, b, c = run_waves_model(p.rho, p.nu, p.s, p.gamma, p.eta, steps=p.steps, nodes=p.nodes)
+            a, b, c = run_waves_model(p.rho, p.nu, p.s, p.zeta, p.eta, steps=p.steps, nodes=p.nodes)
             local_history = copy(a.history)
             lock(lk) do
                 ret[id] = local_history
