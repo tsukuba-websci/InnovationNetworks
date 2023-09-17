@@ -15,6 +15,7 @@ rsurn = {git = "https://github.com/tsukuba-websci/rsurn", rev = "ciaran/fix_conn
 ribs = "^0.5.2"
 seaborn = "^0.12.2"
 tdqm = "^0.0.1"
+statsmodels = "^0.14.0"
 
 [build-system]
 requires = ["poetry-core"]

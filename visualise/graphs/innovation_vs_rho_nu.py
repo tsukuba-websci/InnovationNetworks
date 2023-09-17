@@ -18,7 +18,7 @@ custom_title = "Explorative Innovation: "
 plt.figure(figsize=(10, 6))
 sns.lineplot(data=explorative_df, x='rho_over_nu', y='nctf_mean', hue='rho', markers=True, palette='tab10')
 plt.xlabel(r'$\frac{\rho}{\nu}$', fontsize=24)  # Use LaTeX symbols
-plt.ylabel('NCTF Mean', fontsize=24)
+plt.ylabel('NCTF', fontsize=24)
 plt.title(custom_title + 'NCTF vs. ' + r'$\frac{\rho}{\nu}$')
 plt.legend(title='$\\rho$')
 plt.tight_layout()
@@ -29,7 +29,7 @@ plt.close()
 plt.figure(figsize=(10, 6))
 sns.lineplot(data=explorative_df, x='rho_over_nu', y='ttf_mean', hue='rho', markers=True, palette='tab10')
 plt.xlabel(r'$\frac{\rho}{\nu}$', fontsize=24)  # Use LaTeX symbols
-plt.ylabel('TTF Mean', fontsize=24)
+plt.ylabel('TTF', fontsize=24)
 plt.title(custom_title + 'TTF vs. ' + r'$\frac{\rho}{\nu}$')
 plt.legend(title='$\\rho$')
 plt.tight_layout()

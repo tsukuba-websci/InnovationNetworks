@@ -1,6 +1,5 @@
 import sys
 sys.path.append("..")
-from typing import Any
 from lib.run_innovation_process import *
 from lib.utils import *
 import csv

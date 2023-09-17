@@ -7,7 +7,6 @@ from lib.run_innovation_process import *
 from full_search import FullSearch, InnovationType
 
 if __name__ == "__main__":
-    # Set up Julia
 
     # todo: verify these values
     innovation_types = {

@@ -24,4 +24,4 @@ for type, name in types.items():
 
     # Save the figure
     fig.tight_layout()
-    fig.savefig(f"../results/rho_nu_space_grid_{type}.png")
+    fig.savefig(f"../results/rho_nu_space_grid_{type}.png", dpi=300)
