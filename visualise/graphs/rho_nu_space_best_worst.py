@@ -38,11 +38,31 @@ for type, name in types.items():
         "ttf": explorative_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]
     }
 
+    tmn_df = pd.read_csv("../../empirical/results/tmn/output.csv")
+
+    tmn = {
+        "rho": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+        "nu": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+        "nctf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+        "ttf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+        }
+    
+    aps_df = pd.read_csv("../../empirical/results/tmn/output.csv")
+
+    aps = {
+        "rho": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+        "nu": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+        "nctf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+        "ttf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+        }
+
     param_dict = {
         "best_ttf": best_ttf,
         "best_nctf": best_nctf,
         "worst_ttf": worst_ttf,
-        "worst_nctf": worst_nctf
+        "worst_nctf": worst_nctf,
+        "tmn": tmn,
+        "aps": aps
     }
 
 # Define color maps for color coding based on the value
@@ -61,7 +81,9 @@ for type, name in types.items():
     # Plot best and worst points
     ax.scatter(best['rho'], best['nu'], color=cmap(c_norm(best[type])), s=100, label=r'Best ${}$'.format(type))
     ax.scatter(worst['rho'], worst['nu'], color=cmap(c_norm(worst[type])), s=100, label=r'Worst ${}$'.format(type))
-    
+    ax.scatter(tmn['rho'], tmn['nu'], color=cmap(c_norm(tmn[type])), s=100, label=r'TMN ${}$'.format(type))
+    ax.scatter(aps['rho'], aps['nu'], color=cmap(c_norm(aps[type])), s=100, label=r'APS ${}$'.format(type)) 
+
     ax.set_xlim(0.5, 5.5)  # Adjusted left and right space
     ax.set_ylim(1, 30)
     
@@ -83,4 +105,4 @@ for type, name in types.items():
     fig.tight_layout()  # Ensures that all elements of the plot fit within the figure boundaries
     
     # Save the figure
-    fig.savefig(f"../results/rho_nu_space_{type}.png")
+    fig.savefig(f"../results/rho_nu_space_{type}.png", dpi=300)

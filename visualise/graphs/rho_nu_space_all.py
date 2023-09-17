@@ -6,6 +6,7 @@ import matplotlib.colors as mcolors
 
 types = {"nctf_mean": "NCTF", "ttf_mean": "TTF"}
 
+# Full search data
 explorative_df = pd.read_csv("../../full_search/results/explorative/output.csv")
 
 # Preparing data for heatmap (using pivot)

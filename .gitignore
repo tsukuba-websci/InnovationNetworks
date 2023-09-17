@@ -16,3 +16,4 @@ qd/history2bd/__pycache__
 *.pkl
 visualise/graphs/__pycache__
 web_server/build
+fitting/history2bd/__pycache__
