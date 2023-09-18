@@ -9,6 +9,7 @@ from multiprocessing import Pool
 from lib.run_innovation_process import *
 from lib.utils import *
 from typing import List
+from lib.graph2metrics import Graph2Metrics
 
 def main():
     innovation_types = {
@@ -82,6 +83,31 @@ def main():
 
             parsed_networks_histories = [convert_tuples(network_history_raw) for network_history_raw in network_histories]
             graphs = [history_object_to_graph(history=network_history_parsed) for network_history_parsed in parsed_networks_histories]
+
+            metrics = [Graph2Metrics().graph2metrics(graph=graph) for graph in graphs]
+
+            global_cluster_coefficients = [metric.global_cluster_coefficient for metric in metrics]
+            average_global_cluster_coefficient = sum(global_cluster_coefficients) / len(global_cluster_coefficients)
+
+            average_path_lengths = [metric.average_path_length for metric in metrics]
+            average_average_path_length = sum(average_path_lengths) / len(average_path_lengths)
+
+            average_degree = [metric.average_degree for metric in metrics]
+            average_average_degree = sum(average_degree) / len(average_degree)
+
+            network_diameter = [metric.network_diameter for metric in metrics]
+            average_network_diameter = sum(network_diameter) / len(network_diameter)
+
+            metrics_dir = f"{save_path}/{type}"
+            if not os.path.exists(metrics_dir):
+                os.makedirs(metrics_dir)
+            with open(f"{save_path}/{type}/metrics.csv", 'w', newline='') as metrics_csvfile:
+                csv_metrics_writer = csv.writer(metrics_csvfile)
+                
+                # Write header
+                csv_metrics_writer.writerow(["rho","nu","average_global_cluster_coefficient", "average_average_path_length","average_average_degree", "average_network_diameter"])                
+                # Write row
+                csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length, average_average_degree, average_network_diameter])
 
             # Run Innovation Simulations
             args = [(G, innovation_types["explorative"].l, innovation_types["explorative"].k, innovation_types["explorative"].dv, 200) 

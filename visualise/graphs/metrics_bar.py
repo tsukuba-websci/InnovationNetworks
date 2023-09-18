@@ -17,27 +17,18 @@ my_color = {
     "yellow_green": "#C1FF87",
 }
 
-# Define the custom title text
-custom_title = ""
-
-# Define the custom palette using the desired colors
-custom_palette = [
-    my_color["red"],
-    my_color["light_blue"],
-    my_color["light_green"],
-    my_color["purple"],
-    my_color["yellow"],
-]
-
 # Load the CSV data into DataFrames
 explorative_df = pd.read_csv("../../full_search/results/explorative/output.csv")
 
 # Add a new column 'rho_over_nu' which is the result of rho / nu
 explorative_df['rho_over_nu'] = explorative_df['rho'] / explorative_df['nu']
 
+# Define the custom title text
+custom_title = ""
+
 # Plot NCTF vs. rho/nu for each distinct rho value with custom colors
 plt.figure(figsize=(10, 6))
-sns.lineplot(data=explorative_df, x='rho_over_nu', y='nctf_mean', hue='rho', markers=True, palette=custom_palette)
+sns.lineplot(data=explorative_df, x='rho_over_nu', y='nctf_mean', hue='rho', markers=True, palette=my_color)
 plt.xlabel(r'$\frac{\rho}{\nu}$', fontsize=24)  # Use LaTeX symbols
 plt.ylabel('NCTF', fontsize=24)
 plt.title(custom_title + 'NCTF vs. ' + r'$\frac{\rho}{\nu}$')
@@ -48,7 +39,7 @@ plt.close()
 
 # Plot TTF vs. rho/nu for each distinct rho value with custom colors
 plt.figure(figsize=(10, 6))
-sns.lineplot(data=explorative_df, x='rho_over_nu', y='ttf_mean', hue='rho', markers=True, palette=custom_palette)
+sns.lineplot(data=explorative_df, x='rho_over_nu', y='ttf_mean', hue='rho', markers=True, palette=my_color)
 plt.xlabel(r'$\frac{\rho}{\nu}$', fontsize=24)  # Use LaTeX symbols
 plt.ylabel('TTF', fontsize=24)
 plt.title(custom_title + 'TTF vs. ' + r'$\frac{\rho}{\nu}$')
