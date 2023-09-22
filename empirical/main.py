@@ -17,8 +17,9 @@ class Params:
 if __name__ == "__main__":
 
     targets = {
-        "aps": Params(rho=10, nu=16, s="asw", zeta=0.2, eta=0.6, steps=1000000),
-        "tmn": Params(rho=18, nu=24, s="asw", zeta=1.0, eta=0.2, steps=1000000),
+        "aps": Params(rho=4, nu=10, s="asw", zeta=0.5, eta=0.5, steps=1000000),
+        "tmn": Params(rho=2, nu=1, s="asw", zeta=0.5, eta=0.5, steps=1000000),
+        "ida": Params(rho=3, nu=4, s="asw", zeta=0.5, eta=0.5, steps=1000000),
     }
 
     innovation_types = {
