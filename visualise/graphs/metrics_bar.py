@@ -1,8 +1,6 @@
-import pandas as pd
-import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
-
-plt.rcParams["font.size"] = 18
+import pandas as pd
 
 my_color = {
     "red": "#FC8484",
@@ -17,33 +15,51 @@ my_color = {
     "yellow_green": "#C1FF87",
 }
 
-# Load the CSV data into DataFrames
-explorative_df = pd.read_csv("../../full_search/results/explorative/output.csv")
+file_location = "../../full_search/results/explorative/best_worst/"
 
-# Add a new column 'rho_over_nu' which is the result of rho / nu
-explorative_df['rho_over_nu'] = explorative_df['rho'] / explorative_df['nu']
+best_nctf = pd.read_csv(f"{file_location}/best_nctf/metrics.csv")
+worst_nctf = pd.read_csv(f"{file_location}/worst_nctf/metrics.csv")
+best_ttf = pd.read_csv(f"{file_location}/best_ttf/metrics.csv")
+worst_ttf = pd.read_csv(f"{file_location}/worst_ttf/metrics.csv")
 
-# Define the custom title text
-custom_title = ""
+cols = [
+    "average_global_cluster_coefficient",
+    "average_average_path_length",
+    "average_average_degree",
+    "average_network_diameter"
+]
 
-# Plot NCTF vs. rho/nu for each distinct rho value with custom colors
-plt.figure(figsize=(10, 6))
-sns.lineplot(data=explorative_df, x='rho_over_nu', y='nctf_mean', hue='rho', markers=True, palette=my_color)
-plt.xlabel(r'$\frac{\rho}{\nu}$', fontsize=24)  # Use LaTeX symbols
-plt.ylabel('NCTF', fontsize=24)
-plt.title(custom_title + 'NCTF vs. ' + r'$\frac{\rho}{\nu}$')
-plt.legend(title='$\\rho$')
-plt.tight_layout()
-plt.savefig('../results/NCTF_vs_rho_over_nu.png', dpi=300)  # Save the plot as an image
-plt.close()
+# Extract the values from each dataframe
+data = {
+    'Best NCTF': best_nctf[cols].iloc[0].values,
+    'Worst NCTF': worst_nctf[cols].iloc[0].values,
+    'Best TTF': best_ttf[cols].iloc[0].values,
+    'Worst TTF': worst_ttf[cols].iloc[0].values
+}
 
-# Plot TTF vs. rho/nu for each distinct rho value with custom colors
-plt.figure(figsize=(10, 6))
-sns.lineplot(data=explorative_df, x='rho_over_nu', y='ttf_mean', hue='rho', markers=True, palette=my_color)
-plt.xlabel(r'$\frac{\rho}{\nu}$', fontsize=24)  # Use LaTeX symbols
-plt.ylabel('TTF', fontsize=24)
-plt.title(custom_title + 'TTF vs. ' + r'$\frac{\rho}{\nu}$')
-plt.legend(title='$\\rho$')
-plt.tight_layout()
-plt.savefig('../results/TTF_vs_rho_over_nu.png', dpi=300)  # Save the plot as an image
-plt.close()
+bar_width = 0.35
+index = np.arange(2)  # We have 2 groups: NCTF and TTF
+
+titles_readable = {
+    "average_global_cluster_coefficient": "Average Global Cluster Coefficient",
+    "average_average_path_length": "Average Path Length",
+    "average_average_degree": "Average Degree",
+    "average_network_diameter": "Network Diameter"
+}
+
+# Iterate over each metric
+for col, title in zip(cols, titles_readable.values()):
+    fig, ax = plt.subplots(figsize=(6, 5))
+    
+    ax.bar(index, [data['Best NCTF'][cols.index(col)], data['Best TTF'][cols.index(col)]], bar_width, label="Best", color=my_color["dark_green"])
+    ax.bar(index + bar_width, [data['Worst NCTF'][cols.index(col)], data['Worst TTF'][cols.index(col)]], bar_width, label="Worst", color=my_color["dark_red"])
+
+    ax.set_ylabel(title)
+    ax.set_title(title)
+    ax.set_xticks(index + bar_width / 2)
+    ax.set_xticklabels(['NCTF', 'TTF'])
+    ax.legend()
+
+    plt.tight_layout()
+    plt.savefig(f'../results/metrics_{col}.png', dpi=300)
+    plt.close(fig)
