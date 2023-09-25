@@ -218,7 +218,7 @@ class QualityDiversitySearch:
 
             history_to_csv(history=history, location=f"{self.result_dir_path}/history/{index}.csv")
             graph = history_to_graph(csv_location=f"{self.result_dir_path}/history/{index}.csv")
-            graph_to_json(graph, f"../web_server/src/data/{self.target}{index}.json")
+            graph_to_json(graph, f"../webapp/src/data/{self.target}{index}.json")
 
             metrics = Graph2Metrics().graph2metrics(graph=graph)
             metrics_to_csv(metrics, f"{self.result_dir_path}/metrics/{index}.csv")
