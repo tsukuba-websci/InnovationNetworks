@@ -3,14 +3,14 @@ import { Box, Grid } from '@mui/material';
 import { useWindowSize } from '@react-hook/window-size';
 import Graph from './Graph';
 
-import best0 from '../data/min_NCTF0.json';
-import best1 from '../data/min_NCTF1.json';
-import best2 from '../data/min_NCTF2.json';
-import best3 from '../data/min_NCTF3.json';
-import worst1 from '../data/max_NCTF0.json';
-import worst2 from '../data/max_NCTF1.json';
-import worst3 from '../data/max_NCTF2.json';
-import worst4 from '../data/max_NCTF3.json';
+import best0 from '../data/best_nctf_0.json';
+import best1 from '../data/best_nctf_1.json';
+import best2 from '../data/best_nctf_2.json';
+import best3 from '../data/best_nctf_3.json';
+import worst1 from '../data/worst_nctf_0.json';
+import worst2 from '../data/worst_nctf_1.json';
+import worst3 from '../data/worst_nctf_2.json';
+import worst4 from '../data/worst_nctf_3.json';
 
 function BestWorst() {
   const [width, height] = useWindowSize();

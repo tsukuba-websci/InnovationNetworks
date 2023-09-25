@@ -84,6 +84,14 @@ def main():
             parsed_networks_histories = [convert_tuples(network_history_raw) for network_history_raw in network_histories]
             graphs = [history_object_to_graph(history=network_history_parsed) for network_history_parsed in parsed_networks_histories]
 
+            output_directory = "data/output/graph"
+            if not os.path.exists(output_directory):
+                os.makedirs(output_directory)
+            counter = 0
+            for graph in graphs:
+                graph_to_json(graph, f"data/output/graph/{type}_{counter}.json")
+                counter += 1
+            
             metrics = [Graph2Metrics().graph2metrics(graph=graph) for graph in graphs]
 
             global_cluster_coefficients = [metric.global_cluster_coefficient for metric in metrics]
