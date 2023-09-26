@@ -5,6 +5,8 @@ import InnovationComparison from './components/InnovationComparison.js';
 import SimulationComparison from './components/SimulationComparison.js';
 import Timeline from './components/Timeline.js';
 import BestWorst from './components/BestWorst.js';
+import BestNCTF from './components/BestNCTF.js'
+import BestTTF from './components/BestTTF.js'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
             <Route path='/timeline' element={<Timeline />} />
             <Route path='/innovation' element={<InnovationComparison />} />
             <Route path='/best-worst' element={<BestWorst />} />
+            <Route path='/best-nctf' element={<BestNCTF />} />
+            <Route path='/best-ttf' element={<BestTTF />} />
           </Routes>
         </main>
       </Router>
