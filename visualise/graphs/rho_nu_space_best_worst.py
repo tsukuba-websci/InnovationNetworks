@@ -6,9 +6,23 @@ import matplotlib.colors as mcolors
 
 types = {"nctf": "NCTF", "ttf": "TTF"}
 
+my_color = {
+    "red": "#FC8484",
+    "dark_red": "#FA5050",
+    "light_blue": "#94C4E0",
+    "light_green": "#9CDAA0",
+    "dark_blue": "#76ABCB",
+    "dark_green": "#51BD56",
+    "black": "#505050",
+    "purple": "#CBA6DD",
+    "yellow": "#FFE959",
+    "yellow_green": "#C1FF87",
+}
+
 for type, name in types.items():
     # Load the CSV data into DataFrames
     explorative_df = pd.read_csv("../../full_search/results/explorative/output.csv")
+    explorative_df['rho_over_nu'] = explorative_df['rho'] / explorative_df['nu']
 
     best_ttf = {
         "rho": explorative_df.sort_values(by='ttf_mean').head(1)["rho"].iloc[0],
@@ -75,61 +89,43 @@ for type, name in types.items():
         "ida": ida
     }
 
-# Define color maps for color coding based on the value
-cmap = plt.get_cmap('viridis')
-
 for type, name in types.items():
     fig, ax = plt.subplots(figsize=(8, 6))
     
     if type == "nctf":
         best, worst = best_nctf, worst_nctf
-        c_norm = mcolors.Normalize(vmin=explorative_df['nctf_mean'].min(), vmax=explorative_df['nctf_mean'].max())
     else:
         best, worst = best_ttf, worst_ttf
-        c_norm = mcolors.Normalize(vmin=explorative_df['ttf_mean'].min(), vmax=explorative_df['ttf_mean'].max())
 
     def generate_label(prefix, rho, nu, value):
-        return f"{prefix} {type.upper()} ({rho:.2f}, {nu:.2f}) = {value:.2f}"
+        return f"{prefix} (rho={rho}, nu={nu}) = {value:.1f}"
+
 
     # Plot best and worst points with updated labels
-    ax.scatter(best['rho'], best['nu'], color=cmap(c_norm(best[type])), s=100, 
-               label=generate_label("Best", best['rho'], best['nu'], best[type]))
-    ax.text(best['rho'], best['nu'], 'Best', fontsize=10, ha='right')
+    ax.scatter(best['rho']/best['nu'], best[type], s=100, color=my_color['light_green'], 
+            label=generate_label("Best", best['rho'], best['nu'], best[type]))
+    ax.text(best['rho']/best['nu'], best[type], 'Best', fontsize=10, ha='right')
 
-    ax.scatter(worst['rho'], worst['nu'], color=cmap(c_norm(worst[type])), s=100, 
-               label=generate_label("Worst", worst['rho'], worst['nu'], worst[type]))
-    ax.text(worst['rho'], worst['nu'], 'Worst', fontsize=10, ha='right')
+    ax.scatter(worst['rho']/worst['nu'], worst[type], s=100, color=my_color['red'], 
+            label=generate_label("Worst", worst['rho'], worst['nu'], worst[type]))
+    ax.text(worst['rho']/worst['nu'], worst[type], 'Worst', fontsize=10, ha='right')
 
-    ax.scatter(tmn['rho'], tmn['nu'], color=cmap(c_norm(tmn[type])), s=100, 
+    ax.scatter(tmn['rho']/tmn['nu'], tmn[type], s=100, color=my_color['light_blue'], 
                label=generate_label("TMN", tmn['rho'], tmn['nu'], tmn[type]))
-    ax.text(tmn['rho'], tmn['nu'], 'TMN', fontsize=10, ha='right')
+    ax.text(tmn['rho']/tmn['nu'], tmn[type], 'TMN', fontsize=10, ha='right')
 
-
-
-    ax.scatter(aps['rho'], aps['nu'], color=cmap(c_norm(aps[type])), s=100, 
+    ax.scatter(aps['rho']/aps['nu'], aps[type], s=100, color=my_color['purple'], 
                label=generate_label("APS", aps['rho'], aps['nu'], aps[type]))
-    ax.text(aps['rho'], aps['nu'], 'APS', fontsize=10, ha='right')
+    ax.text(aps['rho']/aps['nu'], aps[type], 'APS', fontsize=10, ha='right')
 
-    ax.scatter(ida['rho'], ida['nu'], color=cmap(c_norm(ida[type])), s=100, 
-               label=generate_label("IDEA", ida['rho'], ida['nu'], ida[type]))
-    ax.text(ida['rho'], ida['nu'], 'IDEA', fontsize=10, ha='right')
-
-    ax.set_xlim(0.5, 5.5)  # Adjusted left and right space
-    ax.set_ylim(1, 30)
-    
-    # Adjust x-axis to only have integer ticks
-    ax.set_xticks(np.arange(1, 6, 1))
+    ax.scatter(ida['rho']/ida['nu'], ida[type], s=100, color=my_color['yellow'], 
+               label=generate_label("ISN", ida['rho'], ida['nu'], ida[type]))
+    ax.text(ida['rho']/ida['nu'], ida[type], 'ISN', fontsize=10, ha='right')
     
     ax.set_title(name)
-    ax.set_xlabel('$\\rho$')
-    ax.set_ylabel('$\\nu$')
+    ax.set_xlabel('$\\rho / \\nu$')
+    ax.set_ylabel(f"{type.upper()}")
     ax.legend()
-
-    # Create a "mappable" object for the colorbar
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=c_norm)
-    sm.set_array([])
-    cbar = plt.colorbar(sm, ax=ax)
-    cbar.set_label(name)
 
     # Save the figure
     fig.tight_layout()  # Ensures that all elements of the plot fit within the figure boundaries
