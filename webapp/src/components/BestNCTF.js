@@ -10,7 +10,7 @@ function BestNCTF() {
 
   return (
         <Box sx={{backgroundColor:'#618264', height: '100%', width: '100%'}}>
-          <Graph data={best} width={width*2.01} height={height} linkColor='white' nodeColor='white' />
+          <Graph data={best} width={width*2.01} height={height} linkColor='black' nodeColor='black' />
         </Box>
   );
 }
