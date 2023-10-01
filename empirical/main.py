@@ -27,10 +27,7 @@ if __name__ == "__main__":
         "exploitative" : InnovationType(20, 2, 1)
     }
 
-    # For each target we need to run the network generation model.
-    # Then we need to run the innovation model 1000 times.
-    # Then we need calculate the mean nctf and ttf
-    # Then we need to plot those values in the rho-nu space file: visualise/graphs/rho_nu_space_empirical.py
+    # If the metrics for the empirical data do not exist then the metrics should be calculated
 
     for target, params in targets.items():
         emp = Empirical(
