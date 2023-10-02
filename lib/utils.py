@@ -9,6 +9,7 @@ from typing import Any, NamedTuple
 import csv
 import os
 from lib.graph2metrics import Metrics
+from collections import defaultdict
 
 class History2VecResult(NamedTuple):
     gamma: float
@@ -203,3 +204,39 @@ def convert_tuples(tuples_list):
     converted_tuples = [(number_map[num1], number_map[num2]) for num1, num2 in tuples_list]
     
     return converted_tuples
+
+def csv_to_metrics(self, csv_location, metrics_location, interval_num: int) -> None:
+
+    # Read CSV file
+    df = pd.read_csv(csv_location)
+
+    # Create a mapping of unique users to unique integers
+    user_mapping = defaultdict(lambda: len(user_mapping))
+
+    # Convert DataFrame to list of tuples
+    history = [(user_mapping[caller], user_mapping[callee]) for caller, callee in df.values]
+
+    if any(map(lambda row: row[0] == 0 or row[1] == 0, history)):
+        history = list(map(lambda row: (row[0] + 1, row[1] + 1), history))
+
+    nt = Main.history2vec(history, interval_num)
+
+    result = History2VecResult(
+        c=nt.c,
+        g=nt.g,
+        gamma=nt.gamma,
+        h=nt.h,
+        nc=nt.nc,
+        no=nt.no,
+        oc=nt.oc,
+        oo=nt.oo,
+        r=nt.r,
+        y=nt.y,
+    )
+
+    # Convert the result to a DataFrame
+    df = pd.DataFrame([result._asdict()])
+
+    # Save the DataFrame to a csv
+    df.to_csv(metrics_location, index=False)
+    pass

@@ -15,19 +15,17 @@ class Params:
     nodes: int = 100
 
 if __name__ == "__main__":
-
     targets = {
         "aps": Params(rho=4, nu=10, s="asw", zeta=0.5, eta=0.5, steps=1000000),
         "tmn": Params(rho=2, nu=1, s="asw", zeta=0.5, eta=0.5, steps=1000000),
         "ida": Params(rho=3, nu=4, s="asw", zeta=0.5, eta=0.5, steps=1000000),
+        "netbiz": Params(rho=1, nu=2, s="asw", zeta=0.5, eta=0.5, steps=1000000),
     }
 
     innovation_types = {
         "explorative" : InnovationType(1, 20, 1),
         "exploitative" : InnovationType(20, 2, 1)
     }
-
-    # If the metrics for the empirical data do not exist then the metrics should be calculated
 
     for target, params in targets.items():
         emp = Empirical(

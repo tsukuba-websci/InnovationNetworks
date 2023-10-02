@@ -78,6 +78,15 @@ for type, name in types.items():
         "nctf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
         "ttf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
         }
+    
+    netbiz_df = pd.read_csv("../../empirical/results/netbiz/output.csv")
+
+    netbiz = {
+        "rho": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+        "nu": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+        "nctf": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+        "ttf": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+        }
 
     param_dict = {
         "best_ttf": best_ttf,
@@ -86,7 +95,8 @@ for type, name in types.items():
         "worst_nctf": worst_nctf,
         "tmn": tmn,
         "aps": aps,
-        "ida": ida
+        "ida": ida,
+        "netbiz": netbiz
     }
 
 for type, name in types.items():
@@ -122,6 +132,10 @@ for type, name in types.items():
                label=generate_label("ISN", ida['rho'], ida['nu'], ida[type]))
     ax.text(ida['rho']/ida['nu'], ida[type], 'ISN', fontsize=10, ha='right')
     
+    ax.scatter(netbiz['rho']/netbiz['nu'], netbiz[type], s=100, color=my_color['dark_blue'], 
+               label=generate_label("SanSan", netbiz['rho'], netbiz['nu'], netbiz[type]))
+    ax.text(netbiz['rho']/netbiz['nu'], netbiz[type], 'SanSan', fontsize=10, ha='right')
+
     ax.set_title(name)
     ax.set_xlabel('$\\rho / \\nu$')
     ax.set_ylabel(f"{type.upper()}")
