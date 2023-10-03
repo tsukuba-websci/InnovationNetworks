@@ -2,7 +2,6 @@ import sys
 sys.path.append("..")
 from dataclasses import dataclass
 from empirical import Empirical, InnovationType
-# todo: add empirical fitting
 
 @dataclass
 class Params:
