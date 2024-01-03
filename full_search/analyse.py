@@ -83,16 +83,22 @@ def main():
     innovation_simulations_per_network = 1000
 
     # Run the model for the best worst solutions for both explorative and exploitative
-    for type, param_set in param_dict.items():
+    for entry, param_set in param_dict.items():
         rho = param_set["rho"]
         nu = param_set["nu"]
-        print(f"Running for {type} with rho={rho} and nu={nu}")
 
-        save_path = f"results/{type.split('_')[1]}"  # Use the part after the underscore as the folder name
+        best_worst = entry.split('_')[0]  # ex. best, worst
+        innovation_measure = entry.split('_')[1]  # ex. ttf, nctf
+        type_key = entry.split('_')[2]  # ex. explorative, exploitative
+        innovation_type = innovation_types[type_key]
+
+        print(f"Running for {type_key} with rho={rho} and nu={nu}")
+
+        save_path = f"results/{type_key}"  # Corrected folder name
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        with open(f"{save_path}/{type}.csv", 'w', newline='') as csvfile:
+        with open(f"{save_path}/{entry}.csv", 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
 
             # Write header
@@ -134,22 +140,22 @@ def main():
             network_density = [metric.network_density for metric in metrics]
             average_network_density = sum(network_density) / len(network_density)
 
-            metrics_dir = f"{save_path}/{type}"
+            # Save Metrics
+            metrics_dir = f"{save_path}/metrics"
             if not os.path.exists(metrics_dir):
                 os.makedirs(metrics_dir)
-            with open(f"{save_path}/{type}/metrics.csv", 'w', newline='') as metrics_csvfile:
+
+            with open(f"{metrics_dir}/{entry}_metrics.csv", 'w', newline='') as metrics_csvfile:
                 csv_metrics_writer = csv.writer(metrics_csvfile)
 
                 # Write header
                 csv_metrics_writer.writerow(["rho", "nu", "average_global_cluster_coefficient", "average_average_path_length",
-                                             "average_average_degree", "average_network_diameter", "average_network_density"])
-                # Write row
-                csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length,
-                                             average_average_degree, average_network_diameter, average_network_density])
+                                                "average_average_degree", "average_network_diameter", "average_network_density"])
+
 
             # Run Innovation Simulations
-            args = [(G, innovation_types[type.split('_')[1]].l, innovation_types[type.split('_')[1]].k,
-                     innovation_types[type.split('_')[1]].dv, 200)
+            args = [(G, innovation_types[type.split('_')[2]].l, innovation_types[type.split('_')[2]].k,
+                     innovation_types[type.split('_')[2]].dv, 200)
                     for G in graphs for _ in range(innovation_simulations_per_network)]
 
             with Pool(processes=int(os.environ.get("JULIA_NUM_THREADS", 4))) as pool:
