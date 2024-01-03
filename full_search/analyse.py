@@ -137,15 +137,19 @@ def main():
             metrics_dir = f"{save_path}/{type}"
             if not os.path.exists(metrics_dir):
                 os.makedirs(metrics_dir)
-            with open(f"{save_path}/{type.split('_')[1]}/metrics.csv", 'w', newline='') as metrics_csvfile:
+
+            # Create a unique metrics CSV file for each parameter combination
+            metrics_filename = f"{metrics_dir}/metrics.csv"
+            with open(metrics_filename, 'w', newline='') as metrics_csvfile:
                 csv_metrics_writer = csv.writer(metrics_csvfile)
 
                 # Write header
                 csv_metrics_writer.writerow(["rho", "nu", "average_global_cluster_coefficient", "average_average_path_length",
-                                             "average_average_degree", "average_network_diameter", "average_network_density"])
+                                            "average_average_degree", "average_network_diameter", "average_network_density"])
                 # Write row
                 csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length,
-                                             average_average_degree, average_network_diameter, average_network_density])
+                                            average_average_degree, average_network_diameter, average_network_density])
+
 
             # Run Innovation Simulations
             args = [(G, innovation_types[type.split('_')[1]].l, innovation_types[type.split('_')[1]].k,
