@@ -33,3 +33,16 @@ The following is an overview of the project structure:
 
 ## Usage
 
+1. Calculate the network metrics for your social network by running the code in `calculate_metrics`. This will create `data/metrics/<dataset>.csv` with the metrics of the empirical network.
+
+2. Fit your network to the ABM by running the code in `fitting`. This will create `fitting/results/<dataset>/best.csv` with the best fit reinforcement and novelty parameters using QD algorithms and the metrics from step 1.
+
+3. Run the ABM and calculate the resulting innovation efficiencies by running the code in `empirical`. This will create `empirical/results/<dataset>/output.csv` with the mean NCTF and TTF of the ABM0-generated networks.
+
+4. Run the full search to running the code in `full_search`. This will create `full_search/results/<innovation_type>/output.csv` with the mean NCTF and TTF of the ABM-generated networks for all possible reinforcement and novelty parameters.
+
+5. To visualise the results in the browser, the optimal and least optimal innovation networks must be converted into JSON format. This is done by running `full_search/analyse.py`. This will create 100 networks for the best and worst choice of ABM parameters and create correspodning JSON files in `full_search/data/output/graph/`.
+
+6. To run the webapp navigate to `webapp` and run `npm install` and `npm start`. This will start the webapp on `localhost:3000`. The webapp can be used to visualise the networks in the browser. You need to ensure the correct JSON files are placed in `webapp/src/data/`. See the `webapp` README for more details.
+
+7. To create plots of the results, run the scripts in `visualise`. This will create plots in `visualise/results/`.
