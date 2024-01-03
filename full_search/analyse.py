@@ -92,13 +92,12 @@ def main():
         type_key = entry.split('_')[2]  # ex. explorative, exploitative
         innovation_type = innovation_types[type_key]
 
-        print(f"Running for {type_key} with rho={rho} and nu={nu}")
-
+        print(f"Running for {entry}: rho={rho} and nu={nu}")
         save_path = f"results/{type_key}"  # Corrected folder name
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        with open(f"{save_path}/{entry}.csv", 'w', newline='') as csvfile:
+        with open(f"{save_path}/{best_worst}_{innovation_measure}.csv", 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
 
             # Write header
@@ -151,6 +150,8 @@ def main():
                 # Write header
                 csv_metrics_writer.writerow(["rho", "nu", "average_global_cluster_coefficient", "average_average_path_length",
                                                 "average_average_degree", "average_network_diameter", "average_network_density"])
+                
+                csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length, average_average_degree, average_network_diameter, average_network_density])
 
             # Run Innovation Simulations
             args = [(G, innovation_types[type_key].l, innovation_types[type_key].k,
