@@ -7,7 +7,7 @@ node_modules
 *.csv
 *.json
 *.png
-!assets/
+!assets/example_networks.png
 utils/__pycache__
 visualisation/build
 lib/__pycache__
