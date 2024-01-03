@@ -13,7 +13,7 @@ julia = "*"
 karateclub = "1.3.3"
 ribs = "^0.5.2"
 seaborn = "^0.12.2"
-tqdm = "^0.0.1"  # Corrected typo
+tqdm = "*"
 statsmodels = "^0.14.0"
 
 [build-system]
