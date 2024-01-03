@@ -14,23 +14,6 @@ This project takes fits empirical social netowrks to an [agent-based model](http
 - [Installation](#installation)
 - [Usage](#usage)
 
-## Installation
-
-Instructions on how to install and set up the project.
-
-## Project Structure
-
-The following is an overview of the project structure:
-
- - empirical: 
- - fitting: 
- - full_search:
- - qd: used to find the best fit parameters using a quality-diversity algorithm
- - visualise: used to create plots of the results
- - webapp: used to visualise the networks in the browser
- - lib: contains the innovation simulation model, the network measuring tools and other necessary functions
- - calculate_metrics: used to calculate the networks metrics (clustering coefficient, youth coefficient, etc.) for a given network
-
 ## Usage
 
 1. Calculate the network metrics for your social network by running the code in `calculate_metrics`. This will create `data/metrics/<dataset>.csv` with the metrics of the empirical network.
