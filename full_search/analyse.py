@@ -152,10 +152,9 @@ def main():
                 csv_metrics_writer.writerow(["rho", "nu", "average_global_cluster_coefficient", "average_average_path_length",
                                                 "average_average_degree", "average_network_diameter", "average_network_density"])
 
-
             # Run Innovation Simulations
-            args = [(G, innovation_types[type.split('_')[2]].l, innovation_types[type.split('_')[2]].k,
-                     innovation_types[type.split('_')[2]].dv, 200)
+            args = [(G, innovation_types[type_key].l, innovation_types[type_key].k,
+                     innovation_types[type_key].dv, 200)
                     for G in graphs for _ in range(innovation_simulations_per_network)]
 
             with Pool(processes=int(os.environ.get("JULIA_NUM_THREADS", 4))) as pool:
