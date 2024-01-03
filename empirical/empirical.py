@@ -59,7 +59,6 @@ class Empirical:
             nctf_list = []
             ttf_list = []
 
-
             num_networks = 100
             innovation_simulations_per_network = 1000
 
@@ -75,7 +74,6 @@ class Empirical:
 
             with Pool(processes=12) as pool:
                 results = pool.map(run_innovation_process_parallel, args)
-
             
             for result in results:
                 nctf = result[0]
