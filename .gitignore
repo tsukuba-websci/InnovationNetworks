@@ -1,12 +1,13 @@
-web-app/build
-web-app/node_modules
-web-app/.DS_Store
+webapp/build
+webapp/node_modules
+webapp/.DS_Store
+webapp/src/components/graph.json
 .DS_Store
 node_modules
-web-app/src/components/graph.json
 *.csv
 *.json
 *.png
+!assets/
 utils/__pycache__
 visualisation/build
 lib/__pycache__
@@ -17,4 +18,4 @@ qd/history2bd/__pycache__
 visualise/graphs/__pycache__
 webapp/build
 fitting/history2bd/__pycache__
-!assets/
+
