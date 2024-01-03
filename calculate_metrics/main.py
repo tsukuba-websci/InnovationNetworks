@@ -39,7 +39,7 @@ if __name__ == "__main__":
     arg_parser.add_argument(
         "target_name",
         type=str,
-        choices=["twitter", "aps", "ideastorm", "netbiz"],
+        choices=["twitter", "aps", "ideastorm", "eight"],
         help="Target Data",
     )
 

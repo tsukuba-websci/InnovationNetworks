@@ -18,7 +18,7 @@ if __name__ == "__main__":
         "aps": Params(rho=4, nu=10, s="asw", zeta=0.5, eta=0.5, steps=1000000),
         "tmn": Params(rho=2, nu=1, s="asw", zeta=0.5, eta=0.5, steps=1000000),
         "ida": Params(rho=3, nu=4, s="asw", zeta=0.5, eta=0.5, steps=1000000),
-        "netbiz": Params(rho=1, nu=2, s="asw", zeta=0.5, eta=0.5, steps=1000000),
+        "eight": Params(rho=1, nu=2, s="asw", zeta=0.5, eta=0.5, steps=1000000),
     }
 
     innovation_types = {

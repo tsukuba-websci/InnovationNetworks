@@ -4,6 +4,8 @@ import seaborn as sns
 import numpy as np
 import matplotlib.colors as mcolors
 
+plt.rcParams["font.size"] = 18
+
 types = {"nctf": "NCTF", "ttf": "TTF"}
 
 my_color = {
@@ -79,13 +81,13 @@ for type, name in types.items():
         "ttf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
         }
     
-    netbiz_df = pd.read_csv("../../empirical/results/netbiz/output.csv")
+    eight_df = pd.read_csv("../../empirical/results/eight/output.csv")
 
-    netbiz = {
-        "rho": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": netbiz_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+    eight = {
+        "rho": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+        "nu": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+        "nctf": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+        "ttf": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
         }
 
     param_dict = {
@@ -96,49 +98,64 @@ for type, name in types.items():
         "tmn": tmn,
         "aps": aps,
         "ida": ida,
-        "netbiz": netbiz
+        "eight": eight
     }
 
 for type, name in types.items():
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
     
+
     if type == "nctf":
         best, worst = best_nctf, worst_nctf
     else:
         best, worst = best_ttf, worst_ttf
 
     def generate_label(prefix, rho, nu, value):
-        return f"{prefix} (rho={rho}, nu={nu}) = {value:.1f}"
-
+        return f"{prefix} ($\\rho$={rho}, $\\nu$={nu})"
 
     # Plot best and worst points with updated labels
-    ax.scatter(best['rho']/best['nu'], best[type], s=100, color=my_color['light_green'], 
+    if best['rho']/best['nu'] < 1:
+        side = 'left'
+    else:
+        side = 'right'
+    ax.scatter(best['rho']/best['nu'], best[type], s=200, color=my_color['light_green'], 
             label=generate_label("Best", best['rho'], best['nu'], best[type]))
-    ax.text(best['rho']/best['nu'], best[type], 'Best', fontsize=10, ha='right')
+    # ax.scatter(best['rho']/best['nu'], best[type], s=2, color='black')
+    ax.text(best['rho']/best['nu'], best[type], 'Best', fontsize=22, ha=side)
 
-    ax.scatter(worst['rho']/worst['nu'], worst[type], s=100, color=my_color['red'], 
+    if worst['rho']/worst['nu'] < 1:
+        side = 'left'
+    else:
+        side = 'right'
+    ax.scatter(worst['rho']/worst['nu'], worst[type], s=200, color=my_color['red'], 
             label=generate_label("Worst", worst['rho'], worst['nu'], worst[type]))
-    ax.text(worst['rho']/worst['nu'], worst[type], 'Worst', fontsize=10, ha='right')
+    # ax.scatter(worst['rho']/worst['nu'], worst[type], s=2, color='black')
+    ax.text(worst['rho']/worst['nu'], worst[type], 'Worst', fontsize=22, ha=side, va='top')
 
-    ax.scatter(tmn['rho']/tmn['nu'], tmn[type], s=100, color=my_color['light_blue'], 
+    ax.scatter(tmn['rho']/tmn['nu'], tmn[type], s=200, color=my_color['light_blue'], 
                label=generate_label("TMN", tmn['rho'], tmn['nu'], tmn[type]))
-    ax.text(tmn['rho']/tmn['nu'], tmn[type], 'TMN', fontsize=10, ha='right')
+    # ax.scatter(tmn['rho']/tmn['nu'], tmn[type], s=2, color='black')
+    ax.text(tmn['rho']/tmn['nu'], tmn[type], 'TMN', fontsize=22, ha='right')
 
-    ax.scatter(aps['rho']/aps['nu'], aps[type], s=100, color=my_color['purple'], 
+    ax.scatter(aps['rho']/aps['nu'], aps[type], s=200, color=my_color['purple'], 
                label=generate_label("APS", aps['rho'], aps['nu'], aps[type]))
-    ax.text(aps['rho']/aps['nu'], aps[type], 'APS', fontsize=10, ha='right')
+    # ax.scatter(aps['rho']/aps['nu'], aps[type], s=2, color='black')
+    ax.text(aps['rho']/aps['nu'], aps[type], 'APS', fontsize=22, ha='right')
 
-    ax.scatter(ida['rho']/ida['nu'], ida[type], s=100, color=my_color['yellow'], 
+    ax.scatter(ida['rho']/ida['nu'], ida[type], s=200, color=my_color['yellow'], 
                label=generate_label("ISN", ida['rho'], ida['nu'], ida[type]))
-    ax.text(ida['rho']/ida['nu'], ida[type], 'ISN', fontsize=10, ha='right')
+    # ax.scatter(ida['rho']/ida['nu'], ida[type], s=2, color='black')
+    ax.text(ida['rho']/ida['nu'], ida[type], 'ISN', fontsize=22, ha='left')
     
-    ax.scatter(netbiz['rho']/netbiz['nu'], netbiz[type], s=100, color=my_color['dark_blue'], 
-               label=generate_label("SanSan", netbiz['rho'], netbiz['nu'], netbiz[type]))
-    ax.text(netbiz['rho']/netbiz['nu'], netbiz[type], 'SanSan', fontsize=10, ha='right')
+    ax.scatter(eight['rho']/eight['nu'], eight[type], s=200, color=my_color['yellow_green'], 
+               label=generate_label("EUN", eight['rho'], eight['nu'], eight[type]))
+    # ax.scatter(eight['rho']/eight['nu'], eight[type], s=2, color='black')
+    ax.text(eight['rho']/eight['nu'], eight[type], 'EUN', fontsize=22, ha='right')
 
-    ax.set_title(name)
-    ax.set_xlabel('$\\rho / \\nu$')
-    ax.set_ylabel(f"{type.upper()}")
+    ax.set_xlim(0, 5)
+    ax.set_title(name + ' vs. ' + '$\\rho / \\nu$', fontsize=24)
+    ax.set_xlabel('$\\rho / \\nu$', fontsize=24)
+    ax.set_ylabel(f"{type.upper()}", fontsize=24)
     ax.legend()
 
     # Save the figure

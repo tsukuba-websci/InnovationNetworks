@@ -5,7 +5,7 @@ if __name__ == "__main__":
     import os
     import pandas as pd
 
-    target = "netbiz"
+    target = "eight"
     input_directory = f"../data/networks/{target}/raw"
     output_directory = f"../data/networks/{target}/processed"
 
@@ -33,4 +33,4 @@ if __name__ == "__main__":
     selected_df = selected_df.rename(columns=new_column_names)
 
     # Write the selected DataFrame to a CSV file
-    selected_df.to_csv(f'{output_directory}/netbiz_processed.csv', index=False)
+    selected_df.to_csv(f'{output_directory}/eight_processed.csv', index=False)
