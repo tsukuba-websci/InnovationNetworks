@@ -92,7 +92,7 @@ def main():
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        with open(f"{save_path}/{type.split('_')[1]}.csv", 'w', newline='') as csvfile:  # Change file name here
+        with open(f"{save_path}/{type}.csv", 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
 
             # Write header
@@ -137,26 +137,22 @@ def main():
             metrics_dir = f"{save_path}/{type}"
             if not os.path.exists(metrics_dir):
                 os.makedirs(metrics_dir)
-
-            # Create a unique metrics CSV file for each parameter combination
-            metrics_filename = f"{metrics_dir}/metrics.csv"
-            with open(metrics_filename, 'w', newline='') as metrics_csvfile:
+            with open(f"{save_path}/{type}/metrics.csv", 'w', newline='') as metrics_csvfile:
                 csv_metrics_writer = csv.writer(metrics_csvfile)
 
                 # Write header
                 csv_metrics_writer.writerow(["rho", "nu", "average_global_cluster_coefficient", "average_average_path_length",
-                                            "average_average_degree", "average_network_diameter", "average_network_density"])
+                                             "average_average_degree", "average_network_diameter", "average_network_density"])
                 # Write row
                 csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length,
-                                            average_average_degree, average_network_diameter, average_network_density])
-
+                                             average_average_degree, average_network_diameter, average_network_density])
 
             # Run Innovation Simulations
             args = [(G, innovation_types[type.split('_')[1]].l, innovation_types[type.split('_')[1]].k,
                      innovation_types[type.split('_')[1]].dv, 200)
                     for G in graphs for _ in range(innovation_simulations_per_network)]
 
-            with Pool(processes=4) as pool:
+            with Pool(processes=int(os.environ.get("JULIA_NUM_THREADS", 4))) as pool:
                 results = pool.map(run_innovation_process_parallel, args)
 
             print("processing results")
