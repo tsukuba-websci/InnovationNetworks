@@ -17,3 +17,4 @@ qd/history2bd/__pycache__
 visualise/graphs/__pycache__
 webapp/build
 fitting/history2bd/__pycache__
+!assets/
