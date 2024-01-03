@@ -92,7 +92,7 @@ def main():
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        with open(f"{save_path}/{type}.csv", 'w', newline='') as csvfile:
+        with open(f"{save_path}/{type.split('_')[1]}.csv", 'w', newline='') as csvfile:  # Change file name here
             csv_writer = csv.writer(csvfile)
 
             # Write header
@@ -137,7 +137,7 @@ def main():
             metrics_dir = f"{save_path}/{type}"
             if not os.path.exists(metrics_dir):
                 os.makedirs(metrics_dir)
-            with open(f"{save_path}/{type}/metrics.csv", 'w', newline='') as metrics_csvfile:
+            with open(f"{save_path}/{type.split('_')[1]}/metrics.csv", 'w', newline='') as metrics_csvfile:
                 csv_metrics_writer = csv.writer(metrics_csvfile)
 
                 # Write header
