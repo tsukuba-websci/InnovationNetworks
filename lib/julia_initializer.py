@@ -25,7 +25,7 @@ class JuliaInitializer:
                 self.thread_num = cpu_count
             else:
                 self.thread_num = 4  # default thread number
-            os.environ[JULIA_NUM_THREADS] = str(2)
+            os.environ[JULIA_NUM_THREADS] = str(6)
         else:
             self.thread_num = int(2)
 

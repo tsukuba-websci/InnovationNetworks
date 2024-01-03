@@ -106,6 +106,9 @@ def main():
             network_diameter = [metric.network_diameter for metric in metrics]
             average_network_diameter = sum(network_diameter) / len(network_diameter)
 
+            network_density = [metric.network_density for metric in metrics]
+            average_network_density = sum(network_density) / len(network_density)
+
             metrics_dir = f"{save_path}/{type}"
             if not os.path.exists(metrics_dir):
                 os.makedirs(metrics_dir)
@@ -113,9 +116,9 @@ def main():
                 csv_metrics_writer = csv.writer(metrics_csvfile)
                 
                 # Write header
-                csv_metrics_writer.writerow(["rho","nu","average_global_cluster_coefficient", "average_average_path_length","average_average_degree", "average_network_diameter"])                
+                csv_metrics_writer.writerow(["rho","nu","average_global_cluster_coefficient", "average_average_path_length","average_average_degree", "average_network_diameter", "average_network_density"])                
                 # Write row
-                csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length, average_average_degree, average_network_diameter])
+                csv_metrics_writer.writerow([rho, nu, average_global_cluster_coefficient, average_average_path_length, average_average_degree, average_network_diameter, average_network_density])
 
             # Run Innovation Simulations
             args = [(G, innovation_types["explorative"].l, innovation_types["explorative"].k, innovation_types["explorative"].dv, 200) 

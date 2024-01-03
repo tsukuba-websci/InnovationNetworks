@@ -16,6 +16,7 @@ class Metrics(NamedTuple):
     average_path_length: float
     average_degree: float
     network_diameter: float
+    network_density: float
     average_degree_connectivity: float
     average_neighbor_degree: float
     local_efficiency: float
@@ -28,6 +29,7 @@ class Graph2Metrics:
                        average_path_length=calc_average_path_length(graph),
                        average_degree=calc_average_degree(graph),
                        network_diameter=calc_network_diameter(graph),
+                       network_density=calc_network_density(graph),
                        average_degree_connectivity=calc_average_degree_connectivity(graph),
                        average_neighbor_degree=calc_average_neighbor_degree(graph),
                        local_efficiency=calc_local_efficiency(graph),

@@ -23,3 +23,6 @@ def calc_local_efficiency(G: nx.Graph) -> float:
 
 def calc_global_efficiency(G: nx.Graph) -> float:
     return nx.global_efficiency(G)
+
+def calc_network_density(G: nx.Graph) -> float:
+    return nx.density(G)

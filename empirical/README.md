@@ -1,0 +1,1 @@
+empirical is used to calculate the innovation efficiency (NCTF and TTF) for empirical networks given the fitted values of rho and nu.

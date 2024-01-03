@@ -17,7 +17,7 @@ if __name__ == "__main__":
     arg_parser.add_argument(
         "target_name",
         type=str,
-        choices=["twitter", "aps", "ideastorm"],
+        choices=["twitter", "aps", "ideastorm", "eight"],
         help="Target Data",
     )
     arg_parser.add_argument("dim", type=int, choices=[64, 128, 256], help="dimensionality of embedding in graph2vec")
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         standardize_model_path=f"./models/dim{dim}/standardize.pkl",
     )
 
-    target_csv = f"../data/{target_name}.csv"
+    target_csv = f"../data/metrics/{target_name}.csv"
     df = cast(Dict[str, float], pd.read_csv(target_csv).iloc[0].to_dict())
     target = History2VecResult(**df)
     num_generations = 200
