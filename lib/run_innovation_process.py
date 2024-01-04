@@ -7,6 +7,9 @@ class InnovationAchieved(Exception):
 class NotEnoughNodes(Exception):
     pass
 
+class NotEnoughIterations(Exception):
+    pass
+
 def run_innovation_process_parallel(args):
     G, l, k, dv, num_iterations = args
     return run_innovation_process(G, l, k, dv, num_iterations)
@@ -73,7 +76,7 @@ def run_innovation_process(G, l, k, dv, steps):
             history.append(step_history)
 
         # Return statements with total_knowledge_history and std_deviation_history lists
-        return 999999999, 999999999, True, total_knowledge_history, std_deviation_history
+        raise NotEnoughIterations
 
     except InnovationAchieved:
         NCTF = len([item for sublist in history for item in sublist])
@@ -81,4 +84,8 @@ def run_innovation_process(G, l, k, dv, steps):
         return NCTF, TTF, False, total_knowledge_history, std_deviation_history
     
     except NotEnoughNodes:
+        return 999999999, 999999999, True, total_knowledge_history, std_deviation_history
+    
+    except NotEnoughIterations:
+        print("Not enough iterations")
         return 999999999, 999999999, True, total_knowledge_history, std_deviation_history
