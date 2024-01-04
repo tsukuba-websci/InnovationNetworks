@@ -34,4 +34,5 @@ if __name__ == "__main__":
                 results_dir_path=f"results/{target}/{innovation_type}",
                 innovation_type=innovation_parameters,
             )
+            print(f"Running {target} with {innovation_type}")
             emp.run()

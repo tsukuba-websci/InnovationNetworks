@@ -64,6 +64,7 @@ class Empirical:
 
             # Generate networks
             params_list: List[Params] = [self.params for _ in range(num_networks)]
+            print(f"Running  waves model")
             network_histories = jl_main.parallel_run_waves_model(params_list)
             parsed_networks_histories = [convert_tuples(network_history_raw) for network_history_raw in network_histories]
             graphs = [history_object_to_graph(history=network_history_parsed) for network_history_parsed in parsed_networks_histories]
@@ -72,9 +73,11 @@ class Empirical:
             args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.dv, 200) 
                 for G in graphs for _ in range(innovation_simulations_per_network)]
 
+            print(f"Running innovation process")
             with Pool(processes=int(os.environ.get("JULIA_NUM_THREADS", 4))) as pool:
                 results = pool.map(run_innovation_process_parallel, args)
             
+            print(f"Processing results")
             for result in results:
                 nctf = result[0]
                 ttf = result[1]
@@ -84,6 +87,7 @@ class Empirical:
             nctf_mean = sum(nctf_list) / len(nctf_list)
             ttf_mean = sum(ttf_list) / len(ttf_list)
 
+            print(f"Success")
             csv_writer.writerow([self.params.rho, self.params.nu, self.params.s, self.params.zeta, self.params.eta, self.params.steps, self.params.nodes, nctf_mean, ttf_mean])
 
             
