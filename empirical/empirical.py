@@ -72,7 +72,7 @@ class Empirical:
             args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.dv, 200) 
                 for G in graphs for _ in range(innovation_simulations_per_network)]
 
-            with Pool(processes=12) as pool:
+            with Pool(processes=int(os.environ.get("JULIA_NUM_THREADS", 4))) as pool:
                 results = pool.map(run_innovation_process_parallel, args)
             
             for result in results:

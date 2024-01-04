@@ -24,10 +24,11 @@ class JuliaInitializer:
             if cpu_count is not None:
                 self.thread_num = cpu_count
             else:
-                self.thread_num = 4  # default thread number
-            os.environ[JULIA_NUM_THREADS] = str(6)
+                self.thread_num = 4  # default thread num
         else:
-            self.thread_num = int(2)
+            self.thread_num = int(os.environ[JULIA_NUM_THREADS])
+            
+        print(f"JULIA_NUM_THREADS: {self.thread_num}")
 
     def __setup_julia(self):
         from julia.api import Julia

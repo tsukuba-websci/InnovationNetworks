@@ -27,10 +27,12 @@ if __name__ == "__main__":
     }
 
     for target, params in targets.items():
-        emp = Empirical(
-            target=target,
-            params=params,
-            results_dir_path=f"results/{target}",
-            innovation_type=innovation_types["explorative"],
-        )
-        emp.run()
+        for innovation_type, innovation_parameters in innovation_types.items():
+            emp = Empirical(
+                target=target,
+                params=params,
+                results_dir_path=f"results/{target}/{innovation_type}",
+                innovation_type=innovation_parameters,
+            )
+            print(f"Running {target} with {innovation_type}")
+            emp.run()

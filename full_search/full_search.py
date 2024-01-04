@@ -33,16 +33,15 @@ class FullSearch:
     innovation_type: InnovationType
     results_dir_path: str
     target: str
+    threads: int
 
-    def __init__(
-            self,
-            innovation_type: InnovationType,
-            target: str,
-            results_dir_path: str,
-    ) -> None:
+    def __init__(self, innovation_type: InnovationType, target: str, results_dir_path: str) -> None:
         self.innovation_type = innovation_type
         self.target = target
         self.results_dir_path = results_dir_path
+        self.threads = int(os.environ["JULIA_NUM_THREADS"]) if "JULIA_NUM_THREADS" in os.environ else 4
+
+        print(f"Running with {self.threads} threads")
 
     def run(self):
         if not os.path.exists(self.results_dir_path):
@@ -87,7 +86,7 @@ class FullSearch:
                     args = [(G, self.innovation_type.l, self.innovation_type.k, self.innovation_type.dv, 200) 
                         for G in graphs for _ in range(innovation_simulations_per_network)]
 
-                    with Pool(processes=12) as pool:
+                    with Pool(processes=self.threads) as pool:
                         results = pool.map(run_innovation_process_parallel, args)
 
                     print("processing results")
