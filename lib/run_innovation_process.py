@@ -16,7 +16,6 @@ def run_innovation_process_parallel(args):
 
 def run_innovation_process(G, l, k, dv, steps):
     # Setup
-    L = [k for _ in range(l)]
     N = G.number_of_nodes()
     knowledge = np.zeros((N, l))
 
@@ -84,6 +83,7 @@ def run_innovation_process(G, l, k, dv, steps):
         return NCTF, TTF, False, total_knowledge_history, std_deviation_history
     
     except NotEnoughNodes:
+        print("Not enough nodes")
         return 999999999, 999999999, True, total_knowledge_history, std_deviation_history
     
     except NotEnoughIterations:
