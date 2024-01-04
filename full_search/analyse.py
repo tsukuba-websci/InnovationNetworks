@@ -90,7 +90,6 @@ def main():
         best_worst = entry.split('_')[0]  # ex. best, worst
         innovation_measure = entry.split('_')[1]  # ex. ttf, nctf
         type_key = entry.split('_')[2]  # ex. explorative, exploitative
-        innovation_type = innovation_types[type_key]
 
         print(f"Running for {entry}: rho={rho} and nu={nu}")
         save_path = f"results/{type_key}"  # Corrected folder name
@@ -119,7 +118,7 @@ def main():
                 os.makedirs(output_directory)
             counter = 0
             for graph in graphs:
-                graph_to_json(graph, f"data/output/graph/{type}_{counter}.json")
+                graph_to_json(graph, f"data/output/graph/{entry}_{counter}.json")
                 counter += 1
 
             metrics = [Graph2Metrics().graph2metrics(graph=graph) for graph in graphs]
