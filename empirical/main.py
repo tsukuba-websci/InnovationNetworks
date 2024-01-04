@@ -15,10 +15,10 @@ class Params:
 
 if __name__ == "__main__":
     targets = {
-        "aps": Params(rho=4, nu=10, s="asw", zeta=0.5, eta=0.5, steps=1000000),
-        "tmn": Params(rho=2, nu=1, s="asw", zeta=0.5, eta=0.5, steps=1000000),
-        "ida": Params(rho=3, nu=4, s="asw", zeta=0.5, eta=0.5, steps=1000000),
-        "eight": Params(rho=1, nu=2, s="asw", zeta=0.5, eta=0.5, steps=1000000),
+        "aps": Params(rho=4, nu=10, s="asw", zeta=0.5, eta=0.5, steps=1),
+        "tmn": Params(rho=2, nu=1, s="asw", zeta=0.5, eta=0.5, steps=1),
+        "ida": Params(rho=3, nu=4, s="asw", zeta=0.5, eta=0.5, steps=1),
+        "eight": Params(rho=1, nu=2, s="asw", zeta=0.5, eta=0.5, steps=1),
     }
 
     innovation_types = {
@@ -27,10 +27,11 @@ if __name__ == "__main__":
     }
 
     for target, params in targets.items():
-        emp = Empirical(
-            target=target,
-            params=params,
-            results_dir_path=f"results/{target}",
-            innovation_type=innovation_types["explorative"],
-        )
-        emp.run()
+        for innovation_type, innovation_parameters in innovation_types.items():
+            emp = Empirical(
+                target=target,
+                params=params,
+                results_dir_path=f"results/{target}/{innovation_type}",
+                innovation_type=innovation_parameters,
+            )
+            emp.run()
