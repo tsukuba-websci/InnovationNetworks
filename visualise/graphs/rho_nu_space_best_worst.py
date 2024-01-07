@@ -1,12 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import matplotlib.colors as mcolors
 
 plt.rcParams["font.size"] = 18
 
-types = {"nctf": "NCTF", "ttf": "TTF"}
+innovation_types = {"explorative": "Explorative", "exploitative": "Exploitative"}
+
+innovation_measures = {"nctf": "NCTF", "ttf": "TTF"}
 
 my_color = {
     "red": "#FC8484",
@@ -21,145 +20,142 @@ my_color = {
     "yellow_green": "#C1FF87",
 }
 
-for type, name in types.items():
-    # Load the CSV data into DataFrames
-    explorative_df = pd.read_csv("../../full_search/results/explorative/output.csv")
-    explorative_df['rho_over_nu'] = explorative_df['rho'] / explorative_df['nu']
+for innovation_type, name in innovation_types.items():
 
-    best_ttf = {
-        "rho": explorative_df.sort_values(by='ttf_mean').head(1)["rho"].iloc[0],
-        "nu": explorative_df.sort_values(by='ttf_mean').head(1)["nu"].iloc[0],
-        "nctf": explorative_df.sort_values(by='ttf_mean').head(1)["nctf_mean"].iloc[0],
-        "ttf": explorative_df.sort_values(by='ttf_mean').head(1)["ttf_mean"].iloc[0]
-    }
+    for measure, name in innovation_measures.items():
+        # Load the CSV data into DataFrames
+        full_search_df = pd.read_csv(f"../../full_search/results/{innovation_type}/output.csv")
+        full_search_df['rho_over_nu'] = full_search_df['rho'] / full_search_df['nu']
 
-    best_nctf = {
-        "rho": explorative_df.sort_values(by='nctf_mean').head(1)["rho"].iloc[0],
-        "nu": explorative_df.sort_values(by='nctf_mean').head(1)["nu"].iloc[0],
-        "nctf": explorative_df.sort_values(by='nctf_mean').head(1)["nctf_mean"].iloc[0],
-        "ttf": explorative_df.sort_values(by='nctf_mean').head(1)["ttf_mean"].iloc[0]
-    }
-
-    worst_ttf = {
-        "rho": explorative_df.sort_values(by='ttf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": explorative_df.sort_values(by='ttf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": explorative_df.sort_values(by='ttf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": explorative_df.sort_values(by='ttf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]
-    }
-
-    worst_nctf = {
-        "rho": explorative_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": explorative_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": explorative_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": explorative_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]
-    }
-
-    tmn_df = pd.read_csv("../../empirical/results/tmn/output.csv")
-
-    tmn = {
-        "rho": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
-        }
-    
-    aps_df = pd.read_csv("../../empirical/results/aps/output.csv")
-
-    aps = {
-        "rho": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
-        }
-    
-    ida_df = pd.read_csv("../../empirical/results/ida/output.csv")
-
-    ida = {
-        "rho": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
-        }
-    
-    eight_df = pd.read_csv("../../empirical/results/eight/output.csv")
-
-    eight = {
-        "rho": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
-        "nu": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
-        "nctf": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
-        "ttf": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+        best_ttf = {
+            "rho": full_search_df.sort_values(by='ttf_mean').head(1)["rho"].iloc[0],
+            "nu": full_search_df.sort_values(by='ttf_mean').head(1)["nu"].iloc[0],
+            "nctf": full_search_df.sort_values(by='ttf_mean').head(1)["nctf_mean"].iloc[0],
+            "ttf": full_search_df.sort_values(by='ttf_mean').head(1)["ttf_mean"].iloc[0]
         }
 
-    param_dict = {
-        "best_ttf": best_ttf,
-        "best_nctf": best_nctf,
-        "worst_ttf": worst_ttf,
-        "worst_nctf": worst_nctf,
-        "tmn": tmn,
-        "aps": aps,
-        "ida": ida,
-        "eight": eight
-    }
+        best_nctf = {
+            "rho": full_search_df.sort_values(by='nctf_mean').head(1)["rho"].iloc[0],
+            "nu": full_search_df.sort_values(by='nctf_mean').head(1)["nu"].iloc[0],
+            "nctf": full_search_df.sort_values(by='nctf_mean').head(1)["nctf_mean"].iloc[0],
+            "ttf": full_search_df.sort_values(by='nctf_mean').head(1)["ttf_mean"].iloc[0]
+        }
 
-for type, name in types.items():
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
+        worst_ttf = {
+            "rho": full_search_df.sort_values(by='ttf_mean', ascending=False).head(1)["rho"].iloc[0],
+            "nu": full_search_df.sort_values(by='ttf_mean', ascending=False).head(1)["nu"].iloc[0],
+            "nctf": full_search_df.sort_values(by='ttf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+            "ttf": full_search_df.sort_values(by='ttf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]
+        }
 
-    if type == "nctf":
-        best, worst = best_nctf, worst_nctf
-    else:
-        best, worst = best_ttf, worst_ttf
+        worst_nctf = {
+            "rho": full_search_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+            "nu": full_search_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+            "nctf": full_search_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+            "ttf": full_search_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]
+        }
 
-    def generate_label(prefix, rho, nu, value):
-        return f"{prefix} ($\\rho$={rho}, $\\nu$={nu})"
+        tmn_df = pd.read_csv(f"../../empirical/results/tmn/{innovation_type}/output.csv")
 
-    # Plot best and worst points with updated labels
-    if best['rho']/best['nu'] < 1:
-        side = 'left'
-    else:
-        side = 'right'
-    ax.scatter(best['rho']/best['nu'], best[type], s=200, color=my_color['light_green'], 
-            label=generate_label("Best", best['rho'], best['nu'], best[type]))
-    # ax.scatter(best['rho']/best['nu'], best[type], s=2, color='black')
-    ax.text(best['rho']/best['nu'], best[type], 'Best', fontsize=22, ha=side)
+        tmn = {
+            "rho": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+            "nu": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+            "nctf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+            "ttf": tmn_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+            }
+        
+        aps_df = pd.read_csv(f"../../empirical/results/aps/{innovation_type}/output.csv")
 
-    if worst['rho']/worst['nu'] < 1:
-        side = 'left'
-    else:
-        side = 'right'
-    ax.scatter(worst['rho']/worst['nu'], worst[type], s=200, color=my_color['red'], 
-            label=generate_label("Worst", worst['rho'], worst['nu'], worst[type]))
-    # ax.scatter(worst['rho']/worst['nu'], worst[type], s=2, color='black')
-    ax.text(worst['rho']/worst['nu'], worst[type], 'Worst', fontsize=22, ha=side, va='top')
+        aps = {
+            "rho": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+            "nu": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+            "nctf": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+            "ttf": aps_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+            }
+        
+        ida_df = pd.read_csv(f"../../empirical/results/ida/{innovation_type}/output.csv")
 
-    ax.scatter(tmn['rho']/tmn['nu'], tmn[type], s=200, color=my_color['light_blue'], 
-               label=generate_label("TMN", tmn['rho'], tmn['nu'], tmn[type]))
-    # ax.scatter(tmn['rho']/tmn['nu'], tmn[type], s=2, color='black')
-    ax.text(tmn['rho']/tmn['nu'], tmn[type], 'TMN', fontsize=22, ha='right')
+        ida = {
+            "rho": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+            "nu": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+            "nctf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+            "ttf": ida_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+            }
+        
+        eight_df = pd.read_csv(f"../../empirical/results/eight/{innovation_type}/output.csv")
 
-    ax.scatter(aps['rho']/aps['nu'], aps[type], s=200, color=my_color['purple'], 
-               label=generate_label("APS", aps['rho'], aps['nu'], aps[type]))
-    # ax.scatter(aps['rho']/aps['nu'], aps[type], s=2, color='black')
-    ax.text(aps['rho']/aps['nu'], aps[type], 'APS', fontsize=22, ha='right')
+        eight = {
+            "rho": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["rho"].iloc[0],
+            "nu": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["nu"].iloc[0],
+            "nctf": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["nctf_mean"].iloc[0],
+            "ttf": eight_df.sort_values(by='nctf_mean', ascending=False).head(1)["ttf_mean"].iloc[0]    
+            }
 
-    ax.scatter(ida['rho']/ida['nu'], ida[type], s=200, color=my_color['yellow'], 
-               label=generate_label("ISN", ida['rho'], ida['nu'], ida[type]))
-    # ax.scatter(ida['rho']/ida['nu'], ida[type], s=2, color='black')
-    ax.text(ida['rho']/ida['nu'], ida[type], 'ISN', fontsize=22, ha='left')
-    
-    ax.scatter(eight['rho']/eight['nu'], eight[type], s=200, color=my_color['yellow_green'], 
-               label=generate_label("EUN", eight['rho'], eight['nu'], eight[type]))
-    # ax.scatter(eight['rho']/eight['nu'], eight[type], s=2, color='black')
-    ax.text(eight['rho']/eight['nu'], eight[type], 'EUN', fontsize=22, ha='right')
+        param_dict = {
+            "best_ttf": best_ttf,
+            "best_nctf": best_nctf,
+            "worst_ttf": worst_ttf,
+            "worst_nctf": worst_nctf,
+            "tmn": tmn,
+            "aps": aps,
+            "ida": ida,
+            "eight": eight
+        }
 
-    ax.set_xlim(0, 5)
-    ax.set_title(name + ' vs. ' + '$\\rho / \\nu$', fontsize=24)
-    ax.set_xlabel('$\\rho / \\nu$', fontsize=24)
-    ax.set_ylabel(f"{type.upper()}", fontsize=24)
-    ax.legend()
+    for measure, name in innovation_measures.items():
+        # Create a figure and axes
+        fig, ax = plt.subplots(figsize=(10, 6))
+        
+        if measure == "nctf":
+            best, worst = best_nctf, worst_nctf
+        else:
+            best, worst = best_ttf, worst_ttf
 
-    # Save the figure
-    fig.tight_layout()  # Ensures that all elements of the plot fit within the figure boundaries
-    
-    # Save the figure
-    fig.savefig(f"../results/rho_nu_space_{type}.png", dpi=300)
+        def generate_label(prefix, rho, nu, value):
+            return f"{prefix} ($\\rho$={rho}, $\\nu$={nu})"
+
+        # Plot best and worst points with updated labels
+        if best['rho']/best['nu'] < 1:
+            side = 'left'
+        else:
+            side = 'right'
+        ax.scatter(best['rho']/best['nu'], best[measure], s=200, color=my_color['light_green'], 
+                label=generate_label("Best", best['rho'], best['nu'], best[measure]))
+        ax.text(best['rho']/best['nu'], best[measure], 'Best', fontsize=22, ha='left')
+
+        if worst['rho']/worst['nu'] < 1:
+            side = 'left'
+        else:
+            side = 'right'
+        ax.scatter(worst['rho']/worst['nu'], worst[measure], s=200, color=my_color['red'], 
+                label=generate_label("Worst", worst['rho'], worst['nu'], worst[measure]))
+        ax.text(worst['rho']/worst['nu'], worst[measure], 'Worst', fontsize=22, ha=side, va='top')
+
+        ax.scatter(tmn['rho']/tmn['nu'], tmn[measure], s=200, color=my_color['light_blue'], 
+                label=generate_label("TMN", tmn['rho'], tmn['nu'], tmn[measure]))
+        ax.text(tmn['rho']/tmn['nu'], tmn[measure], 'TMN', fontsize=22, ha='right')
+
+        ax.scatter(aps['rho']/aps['nu'], aps[measure], s=200, color=my_color['purple'], 
+                label=generate_label("APS", aps['rho'], aps['nu'], aps[measure]))
+        ax.text(aps['rho']/aps['nu'], aps[measure], 'APS', fontsize=22, ha='right')
+
+        ax.scatter(ida['rho']/ida['nu'], ida[measure], s=200, color=my_color['yellow'], 
+                label=generate_label("ISN", ida['rho'], ida['nu'], ida[measure]))
+        ax.text(ida['rho']/ida['nu'], ida[measure], 'ISN', fontsize=22, ha='left')
+        
+        ax.scatter(eight['rho']/eight['nu'], eight[measure], s=200, color=my_color['yellow_green'], 
+                label=generate_label("EUN", eight['rho'], eight['nu'], eight[measure]))
+        ax.text(eight['rho']/eight['nu'], eight[measure], 'EUN', fontsize=22, ha='right')
+
+        ax.set_xlim(0, 5)
+        ax.set_title(f"{name} vs. $\\rho / \\nu$: {innovation_types[innovation_type]} Innovation", fontsize=24)
+        ax.set_xlabel('$\\rho / \\nu$', fontsize=24)
+        ax.set_ylabel(f"{measure.upper()}", fontsize=24)
+
+        legend_location  = 'lower right' if measure == 'nctf' else 'upper right'
+        ax.legend(loc=legend_location, fontsize=18, framealpha=0.5)
+
+        fig.tight_layout()  # Ensures that all elements of the plot fit within the figure boundaries
+        
+        # Save the figure
+        fig.savefig(f"../results/rho_nu_space_{measure}_{innovation_type}.png", dpi=300)
